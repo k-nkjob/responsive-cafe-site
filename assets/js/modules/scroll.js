@@ -1,90 +1,69 @@
 /**
  * NORTH COFFEE
- * Scroll Module
+ * Scroll / Section Navigation Module
  *
  * Responsibilities:
- * - Header scroll state
- * - Internal anchor navigation
- * - Coffee transition
- * - Dynamic header offset
- *
- * Navigation movement is intentionally hidden
- * behind the coffee transition.
+ * - Fixed header state
+ * - Internal section navigation
+ * - Coffee brewing transition
+ * - Section landing position
+ * - News -> Shop reveal control
  */
 
 const SELECTORS = Object.freeze({
-  header:
-    "[data-header]",
-
-  transition:
-    "[data-page-transition]",
-
-  anchor:
-    'a[href^="#"]',
+  header: "[data-header]",
+  transition: "[data-page-transition]",
+  anchors: 'a[href^="#"]',
+  news: "#news",
+  shop: "#shop",
 });
 
 
 const SETTINGS = Object.freeze({
   headerScrollThreshold: 24,
 
-  transitionIn: 180,
+  /*
+   * Coffee transition timing
+   */
+  fadeInDuration: 220,
+  brewingDuration: 1050,
+  fadeOutDuration: 300,
 
-  hiddenDuration: 470,
+  /*
+   * Space between fixed header and
+   * section heading after navigation
+   */
+  desktopLandingGap: 105,
+  mobileLandingGap: 54,
 
-  transitionOut: 180,
-
-  anchorGap: 10,
+  /*
+   * How far user must scroll after
+   * navigating to News before Shop appears
+   */
+  shopRevealDistance: 90,
 });
 
 
-let navigationInProgress =
-  false;
+let navigationInProgress = false;
+
+let newsLandingScrollY = null;
+
+let shopRevealMode = false;
 
 
-const wait = (
-  milliseconds
-) => {
-  return new Promise(
-    (resolve) => {
-      window.setTimeout(
-        resolve,
-        milliseconds
-      );
-    }
-  );
-};
-
-
-const getHeaderHeight = () => {
-  const header =
-    document.querySelector(
-      SELECTORS.header
+const wait = (milliseconds) => {
+  return new Promise((resolve) => {
+    window.setTimeout(
+      resolve,
+      milliseconds
     );
-
-  return (
-    header?.offsetHeight ?? 0
-  );
+  });
 };
 
 
-const getTargetPosition = (
-  target
-) => {
-  const rect =
-    target.getBoundingClientRect();
-
-  const documentTop =
-    window.scrollY +
-    rect.top;
-
-  const offset =
-    getHeaderHeight() +
-    SETTINGS.anchorGap;
-
-
-  return Math.max(
-    0,
-    documentTop - offset
+const getHeader = () => {
+  return document.querySelector(
+    SELECTORS.header
   );
 };
 
@@ -96,65 +75,244 @@ const getTransition = () => {
 };
 
 
-const showTransition = () => {
-  getTransition()?.classList.add(
-    "is-active"
+const getHeaderHeight = () => {
+  return (
+    getHeader()?.offsetHeight ?? 0
   );
 };
 
 
-const hideTransition = () => {
-  getTransition()?.classList.remove(
-    "is-active"
+const getLandingGap = () => {
+  return window.innerWidth <= 768
+    ? SETTINGS.mobileLandingGap
+    : SETTINGS.desktopLandingGap;
+};
+
+
+/*
+ * We intentionally align navigation to the
+ * section heading rather than the section top.
+ *
+ * This removes the previous section from
+ * the visible area.
+ */
+const getNavigationAnchor = (target) => {
+  if (target.id === "home") {
+    return target;
+  }
+
+  return (
+    target.querySelector(
+      ".section-heading"
+    ) ??
+    target.querySelector(
+      ".contact-panel"
+    ) ??
+    target
   );
 };
 
 
-const restartTransitionAnimation =
-  () => {
+const getTargetPosition = (target) => {
+  const anchor =
+    getNavigationAnchor(target);
 
-    const transition =
-      getTransition();
+  const rect =
+    anchor.getBoundingClientRect();
 
-    if (!transition) {
-      return;
+  const absoluteTop =
+    window.scrollY + rect.top;
+
+  const offset =
+    getHeaderHeight() +
+    getLandingGap();
+
+  return Math.max(
+    0,
+    absoluteTop - offset
+  );
+};
+
+
+/* =========================================================
+   Coffee Transition
+========================================================= */
+
+const restartCoffeeAnimation = () => {
+  const transition =
+    getTransition();
+
+  if (!transition) {
+    return;
+  }
+
+  const animatedElements =
+    transition.querySelectorAll(
+      [
+        ".pour-pot",
+        ".pour-stream",
+        ".pour-coffee",
+        ".pour-label",
+      ].join(",")
+    );
+
+  animatedElements.forEach(
+    (element) => {
+      element.style.animation = "none";
     }
+  );
+
+  /*
+   * Force reflow so animation can restart
+   */
+  void transition.offsetWidth;
+
+  animatedElements.forEach(
+    (element) => {
+      element.style.animation = "";
+    }
+  );
+};
 
 
-    const animatedElements =
-      transition.querySelectorAll(
-        [
-          ".pour-pot",
-          ".pour-stream",
-          ".pour-coffee",
-          ".pour-label",
-        ].join(",")
+const showTransition = async () => {
+  const transition =
+    getTransition();
+
+  if (!transition) {
+    return;
+  }
+
+  restartCoffeeAnimation();
+
+  transition.classList.add(
+    "is-active"
+  );
+
+  /*
+   * Wait until dark overlay is clearly visible
+   * BEFORE moving the document
+   */
+  await wait(
+    SETTINGS.fadeInDuration
+  );
+};
+
+
+const hideTransition = async () => {
+  const transition =
+    getTransition();
+
+  if (!transition) {
+    return;
+  }
+
+  transition.classList.remove(
+    "is-active"
+  );
+
+  await wait(
+    SETTINGS.fadeOutDuration
+  );
+};
+
+
+/* =========================================================
+   Shop Reveal
+========================================================= */
+
+const resetShopReveal = () => {
+  const shop =
+    document.querySelector(
+      SELECTORS.shop
+    );
+
+  shopRevealMode = false;
+  newsLandingScrollY = null;
+
+  shop?.classList.remove(
+    "is-navigation-hidden"
+  );
+};
+
+
+const prepareNewsLanding = () => {
+  const shop =
+    document.querySelector(
+      SELECTORS.shop
+    );
+
+  if (!shop) {
+    return;
+  }
+
+  shopRevealMode = true;
+
+  shop.classList.add(
+    "is-navigation-hidden"
+  );
+};
+
+
+const activateNewsLanding = () => {
+  newsLandingScrollY =
+    window.scrollY;
+};
+
+
+const updateShopReveal = () => {
+  if (
+    !shopRevealMode ||
+    newsLandingScrollY === null
+  ) {
+    return;
+  }
+
+  /*
+   * Only reveal when the user genuinely
+   * scrolls DOWN after landing on News.
+   */
+  const distance =
+    window.scrollY -
+    newsLandingScrollY;
+
+  if (
+    distance <
+    SETTINGS.shopRevealDistance
+  ) {
+    return;
+  }
+
+  const shop =
+    document.querySelector(
+      SELECTORS.shop
+    );
+
+  shop?.classList.remove(
+    "is-navigation-hidden"
+  );
+
+  shop?.classList.add(
+    "is-navigation-revealing"
+  );
+
+  window.setTimeout(
+    () => {
+      shop?.classList.remove(
+        "is-navigation-revealing"
       );
+    },
+    700
+  );
+
+  shopRevealMode = false;
+  newsLandingScrollY = null;
+};
 
 
-    animatedElements.forEach(
-      (element) => {
-        element.style.animation =
-          "none";
-      }
-    );
-
-
-    /*
-     * Force layout calculation so CSS animation
-     * can restart on repeated navigation.
-     */
-    void transition.offsetWidth;
-
-
-    animatedElements.forEach(
-      (element) => {
-        element.style.animation =
-          "";
-      }
-    );
-  };
-
+/* =========================================================
+   Navigate
+========================================================= */
 
 const navigateToSection =
   async (target) => {
@@ -163,173 +321,188 @@ const navigateToSection =
       return;
     }
 
-
-    navigationInProgress =
-      true;
-
-
-    restartTransitionAnimation();
-    showTransition();
+    navigationInProgress = true;
 
 
     /*
-     * Allow overlay to become visible
-     * before changing scroll position.
+     * News receives special treatment:
+     * hide Shop until user continues scrolling.
+     */
+    if (target.id === "news") {
+      prepareNewsLanding();
+    } else {
+      resetShopReveal();
+    }
+
+
+    /*
+     * STEP 1
+     * Cover current page first.
+     */
+    await showTransition();
+
+
+    /*
+     * STEP 2
+     * Coffee is now visibly pouring.
+     *
+     * Keep the current page covered long enough
+     * for the user to actually see the animation.
      */
     await wait(
-      SETTINGS.transitionIn
+      Math.round(
+        SETTINGS.brewingDuration * 0.48
+      )
     );
 
 
+    /*
+     * STEP 3
+     * Move while screen is covered.
+     */
     window.scrollTo({
-      top:
-        getTargetPosition(target),
-
-      behavior:
-        "auto",
+      top: getTargetPosition(target),
+      behavior: "auto",
     });
 
 
     /*
-     * Wait while coffee animation is visible.
+     * STEP 4
+     * Let the second half of the brewing
+     * animation finish.
      */
     await wait(
-      SETTINGS.hiddenDuration
+      Math.round(
+        SETTINGS.brewingDuration * 0.52
+      )
     );
 
 
-    hideTransition();
-
-
-    await wait(
-      SETTINGS.transitionOut
-    );
-
-
-    navigationInProgress =
-      false;
-  };
-
-
-const initAnchorNavigation =
-  () => {
-
-    const anchors =
-      document.querySelectorAll(
-        SELECTORS.anchor
-      );
-
-
-    anchors.forEach(
-      (anchor) => {
-
-        anchor.addEventListener(
-          "click",
-          async (event) => {
-
-            const href =
-              anchor.getAttribute(
-                "href"
-              );
-
-
-            if (
-              !href ||
-              href === "#" ||
-              !href.startsWith("#")
-            ) {
-              return;
-            }
-
-
-            const target =
-              document.querySelector(
-                href
-              );
-
-
-            if (!target) {
-              return;
-            }
-
-
-            event.preventDefault();
-
-
-            await navigateToSection(
-              target
-            );
-
-
-            history.replaceState(
-              null,
-              "",
-              href
-            );
-          }
-        );
-      }
-    );
-  };
-
-
-const initHeaderScrollState =
-  () => {
-
-    const header =
-      document.querySelector(
-        SELECTORS.header
-      );
-
-
-    if (!header) {
-      return;
+    if (target.id === "news") {
+      activateNewsLanding();
     }
 
 
-    let ticking =
-      false;
+    /*
+     * STEP 5
+     * Reveal destination.
+     */
+    await hideTransition();
 
 
-    const update = () => {
-      header.classList.toggle(
-        "is-scrolled",
-        window.scrollY >
-          SETTINGS.headerScrollThreshold
-      );
-
-      ticking =
-        false;
-    };
+    navigationInProgress = false;
+  };
 
 
-    const handleScroll = () => {
-      if (ticking) {
-        return;
+/* =========================================================
+   Internal Anchors
+========================================================= */
+
+const initAnchorNavigation = () => {
+  const anchors =
+    document.querySelectorAll(
+      SELECTORS.anchors
+    );
+
+  anchors.forEach((anchor) => {
+    anchor.addEventListener(
+      "click",
+      async (event) => {
+
+        const href =
+          anchor.getAttribute("href");
+
+        if (
+          !href ||
+          href === "#" ||
+          !href.startsWith("#")
+        ) {
+          return;
+        }
+
+        let target = null;
+
+        try {
+          target =
+            document.querySelector(href);
+        } catch {
+          return;
+        }
+
+        if (!target) {
+          return;
+        }
+
+        event.preventDefault();
+
+        await navigateToSection(
+          target
+        );
+
+        history.replaceState(
+          null,
+          "",
+          href
+        );
       }
+    );
+  });
+};
 
 
-      window.requestAnimationFrame(
-        update
-      );
+/* =========================================================
+   Header Scroll State
+========================================================= */
 
-      ticking =
-        true;
-    };
+const initHeaderScrollState = () => {
+  const header =
+    getHeader();
 
+  if (!header) {
+    return;
+  }
 
-    update();
+  let ticking = false;
 
+  const update = () => {
+    header.classList.toggle(
+      "is-scrolled",
+      window.scrollY >
+        SETTINGS.headerScrollThreshold
+    );
 
-    window.addEventListener(
-      "scroll",
-      handleScroll,
-      {
-        passive: true,
-      }
+    updateShopReveal();
+
+    ticking = false;
+  };
+
+  const handleScroll = () => {
+    if (ticking) {
+      return;
+    }
+
+    ticking = true;
+
+    window.requestAnimationFrame(
+      update
     );
   };
 
+  update();
+
+  window.addEventListener(
+    "scroll",
+    handleScroll,
+    {
+      passive: true,
+    }
+  );
+};
+
+
+/* =========================================================
+   Init
+========================================================= */
 
 export const initScroll = () => {
   initHeaderScrollState();
