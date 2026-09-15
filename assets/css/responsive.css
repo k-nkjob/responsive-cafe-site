@@ -2,13 +2,17 @@
    NORTH COFFEE
    responsive.css
 
-   Responsibilities:
+   Responsibilities
    - Tablet overrides
    - Mobile overrides
    - Small-screen adjustments
+   - Responsive modal layout
+   - Responsive navigation
+   - Responsive spacing
 
-   Desktop-first:
-   Base layout is defined in the other CSS files.
+   Base       -> base.css
+   Structure  -> layout.css
+   Components -> components.css
 ========================================================= */
 
 
@@ -21,21 +25,27 @@
 
   :root {
     --container-padding: 32px;
-    --space-10: 6.5rem;
+
+    --space-9: 4.25rem;
+    --space-10: 5.5rem;
   }
 
 
-  /* Header */
+  /* -------------------------------------------------------
+     Header
+  ------------------------------------------------------- */
 
   .global-nav {
     gap: 1.6rem;
   }
 
 
-  /* Hero */
+  /* -------------------------------------------------------
+     Hero
+  ------------------------------------------------------- */
 
   .hero {
-    min-height: 700px;
+    min-height: 650px;
   }
 
   .hero-inner {
@@ -47,18 +57,26 @@
   }
 
   .hero-visual {
-    min-height: 450px;
+    min-height: 430px;
   }
 
 
-  /* Section */
+  /* -------------------------------------------------------
+     Section Heading
+  ------------------------------------------------------- */
 
   .section-heading-row {
-    align-items: flex-start;
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(240px, 360px);
+
+    column-gap: var(--space-6);
   }
 
 
-  /* Concept */
+  /* -------------------------------------------------------
+     Concept
+  ------------------------------------------------------- */
 
   .concept-grid {
     gap: 4rem;
@@ -74,37 +92,71 @@
   }
 
 
-  /* Menu */
+  /* -------------------------------------------------------
+     Menu
+  ------------------------------------------------------- */
 
   .menu-grid {
     grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
   }
 
 
-  /* Shop */
+  /* -------------------------------------------------------
+     Shop
+  ------------------------------------------------------- */
 
   .shop-grid {
     grid-template-columns:
       minmax(0, 1fr)
-      minmax(300px, 0.85fr);
+      minmax(300px, 0.9fr);
   }
 
   .shop-visual {
-    min-height: 460px;
+    min-height: 400px;
+  }
+
+  .shop-information {
+    padding: var(--space-6);
   }
 
 
-  /* Contact */
+  /* -------------------------------------------------------
+     Contact
+  ------------------------------------------------------- */
 
   .contact-panel {
-    min-height: 350px;
+    min-height: 310px;
+  }
+
+
+  /* -------------------------------------------------------
+     Menu Modal
+  ------------------------------------------------------- */
+
+  .menu-modal-dialog {
+    width:
+      min(
+        100%,
+        780px
+      );
+  }
+
+  .menu-modal-layout {
+    grid-template-columns:
+      minmax(200px, 0.85fr)
+      minmax(0, 1.15fr);
+
+    gap: var(--space-5);
   }
 }
 
 
 /* =========================================================
-   Mobile / Tablet portrait
+   Mobile / Tablet Portrait
    <= 768px
 ========================================================= */
 
@@ -112,11 +164,13 @@
 
   :root {
     --container-padding: 22px;
+
     --header-height: 70px;
 
+    --space-7: 2.4rem;
     --space-8: 3rem;
-    --space-9: 4.5rem;
-    --space-10: 5.5rem;
+    --space-9: 3.75rem;
+    --space-10: 4.75rem;
   }
 
 
@@ -125,7 +179,8 @@
   ======================================================= */
 
   .site-header {
-    height: var(--header-height);
+    height:
+      var(--header-height);
   }
 
   .brand-mark {
@@ -156,60 +211,102 @@
 
   .global-nav {
     position: fixed;
-    top: var(--header-height);
+
+    top:
+      var(--header-height);
+
     left: 0;
 
     width: 100%;
-    height: calc(100dvh - var(--header-height));
+
+    height:
+      calc(
+        100dvh -
+        var(--header-height)
+      );
 
     padding:
-      48px
+      36px
       var(--container-padding)
-      40px;
+      32px;
 
     display: flex;
+
     flex-direction: column;
+
     align-items: flex-start;
+
     gap: 0;
 
     overflow-y: auto;
 
     background:
-      rgba(242, 238, 230, 0.985);
+      rgba(
+        242,
+        238,
+        230,
+        0.985
+      );
 
     visibility: hidden;
+
     opacity: 0;
 
-    transform: translateY(-12px);
+    transform:
+      translateY(-10px);
 
     pointer-events: none;
 
     transition:
-      opacity var(--duration-normal) var(--ease-standard),
-      visibility var(--duration-normal) var(--ease-standard),
-      transform var(--duration-normal) var(--ease-standard);
+      opacity
+        var(--duration-normal)
+        var(--ease-standard),
+
+      visibility
+        var(--duration-normal)
+        var(--ease-standard),
+
+      transform
+        var(--duration-normal)
+        var(--ease-standard);
   }
 
   .global-nav.is-open {
     visibility: visible;
+
     opacity: 1;
 
-    transform: translateY(0);
+    transform:
+      translateY(0);
 
     pointer-events: auto;
   }
 
   .global-nav a {
     width: 100%;
-    padding: 18px 0;
+
+    padding:
+      16px
+      0;
 
     border-bottom:
-      1px solid var(--color-border);
+      1px solid
+      var(--color-border);
 
-    color: var(--color-text);
+    color:
+      var(--color-text);
 
-    font-family: var(--font-serif);
-    font-size: clamp(1.5rem, 7vw, 2rem);
+    font-family:
+      var(--font-serif);
+
+    font-size:
+      clamp(
+        1.35rem,
+        6vw,
+        1.85rem
+      );
+
+    line-height: 1.3;
   }
 
   .global-nav a::after {
@@ -225,14 +322,18 @@
     min-height: auto;
 
     padding:
-      calc(var(--header-height) + 55px)
+      calc(
+        var(--header-height) +
+        var(--space-7)
+      )
       0
-      var(--space-9);
+      var(--space-8);
   }
 
   .hero-inner {
     grid-template-columns: 1fr;
-    gap: var(--space-8);
+
+    gap: var(--space-7);
   }
 
   .hero-content {
@@ -243,11 +344,23 @@
     max-width: 560px;
 
     font-size:
-      clamp(3rem, 13vw, 5rem);
+      clamp(
+        3rem,
+        13vw,
+        5rem
+      );
   }
 
   .hero-description {
     max-width: 520px;
+
+    margin-top: var(--space-5);
+
+    line-height: 1.9;
+  }
+
+  .hero-actions {
+    margin-top: var(--space-6);
   }
 
   .hero-visual {
@@ -255,7 +368,11 @@
   }
 
   .hero-visual-card {
-    width: min(82vw, 380px);
+    width:
+      min(
+        82vw,
+        380px
+      );
   }
 
 
@@ -263,22 +380,66 @@
      Generic Sections
   ======================================================= */
 
-  .section-heading {
-    margin-bottom: var(--space-7);
+  .section {
+    padding:
+      var(--space-9)
+      0;
   }
 
-  .section-heading-row {
-    flex-direction: column;
-    gap: var(--space-5);
+  .section-heading {
+    margin-bottom:
+      var(--space-6);
+
+    grid-template-columns:
+      28px
+      minmax(0, 1fr);
+
+    column-gap:
+      var(--space-3);
   }
 
   .section-heading-main {
-    width: 100%;
+    grid-template-columns:
+      28px
+      minmax(0, 1fr);
+
+    column-gap:
+      var(--space-3);
+  }
+
+  .section-heading-row {
+    grid-template-columns: 1fr;
+
+    align-items: start;
+
+    row-gap:
+      var(--space-5);
+  }
+
+  .section-heading h2 {
+    margin-top:
+      10px;
+
+    font-size:
+      clamp(
+        1.9rem,
+        8vw,
+        3rem
+      );
   }
 
   .section-description {
     max-width: 520px;
-    margin-left: 37px;
+
+    /*
+     * Align description with the title text
+     * rather than with section number
+     */
+    margin-left:
+      calc(
+        28px +
+        var(--space-3)
+      );
   }
 
 
@@ -288,6 +449,7 @@
 
   .concept-grid {
     grid-template-columns: 1fr;
+
     gap: var(--space-7);
   }
 
@@ -295,15 +457,30 @@
     max-width: 620px;
   }
 
+  .lead-text {
+    font-size:
+      clamp(
+        1.25rem,
+        5vw,
+        1.55rem
+      );
+  }
+
   .concept-values {
     width: 100%;
   }
 
   .value-item {
+    min-height: auto;
+
     grid-template-columns:
       42px
       100px
       minmax(0, 1fr);
+
+    padding:
+      var(--space-5)
+      0;
   }
 
 
@@ -311,15 +488,25 @@
      Menu
   ======================================================= */
 
+  .filter-list {
+    margin-bottom:
+      var(--space-5);
+  }
+
   .menu-grid {
     grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
 
-    gap: var(--space-4);
+    gap:
+      var(--space-4);
   }
 
   .menu-card-content {
-    padding: var(--space-4);
+    padding:
+      var(--space-4);
   }
 
 
@@ -328,7 +515,11 @@
   ======================================================= */
 
   .news-item {
-    padding: var(--space-5) 0;
+    min-height: auto;
+
+    padding:
+      var(--space-5)
+      0;
 
     grid-template-columns:
       110px
@@ -340,9 +531,11 @@
   }
 
   .news-item h3 {
-    grid-column: 1 / -1;
+    grid-column:
+      1 / -1;
 
-    margin-top: var(--space-2);
+    margin-top:
+      var(--space-2);
   }
 
 
@@ -350,18 +543,41 @@
      Shop
   ======================================================= */
 
+  .shop-section
+  .section-heading {
+    margin-bottom:
+      var(--space-5);
+  }
+
   .shop-grid {
     grid-template-columns: 1fr;
   }
 
   .shop-visual {
-    min-height: 390px;
+    min-height: 310px;
+  }
+
+  .shop-visual::before {
+    width: 280px;
+
+    height: 280px;
+  }
+
+  .shop-visual::after {
+    width: 170px;
+
+    height: 170px;
   }
 
   .shop-information {
     padding:
-      var(--space-7)
       var(--space-5);
+  }
+
+  .information-row {
+    padding:
+      1rem
+      0;
   }
 
 
@@ -377,11 +593,22 @@
       var(--space-5);
 
     flex-direction: column;
+
     align-items: flex-start;
   }
 
+  .contact-copy h2 {
+    font-size:
+      clamp(
+        2.5rem,
+        11vw,
+        4.2rem
+      );
+  }
+
   .contact-panel .button {
-    margin-top: var(--space-3);
+    margin-top:
+      var(--space-2);
   }
 
 
@@ -390,17 +617,97 @@
   ======================================================= */
 
   .modal {
-    padding: var(--space-4);
+    padding:
+      var(--space-4);
   }
 
-  .modal-dialog {
+  .modal-dialog,
+  .menu-modal-dialog {
+    width: 100%;
+
     max-height:
-      calc(100dvh - 32px);
+      calc(
+        100dvh -
+        32px
+      );
 
     padding:
       var(--space-7)
       var(--space-5)
       var(--space-5);
+  }
+
+  .modal-close {
+    top: 12px;
+
+    right: 12px;
+  }
+
+
+  /* =======================================================
+     Menu Modal
+
+     Desktop:
+     [ image ][ information ]
+
+     Mobile:
+     [      image       ]
+     [   information    ]
+  ======================================================= */
+
+  .menu-modal-layout {
+    grid-template-columns: 1fr;
+
+    gap:
+      var(--space-5);
+  }
+
+  .menu-modal-visual {
+    width: 100%;
+
+    max-height: 260px;
+
+    aspect-ratio:
+      16 / 9;
+  }
+
+  .menu-modal-information {
+    padding-top: 0;
+  }
+
+  .menu-modal-title {
+    padding-right:
+      0;
+
+    font-size:
+      clamp(
+        1.9rem,
+        8vw,
+        2.6rem
+      );
+  }
+
+  .menu-modal-description {
+    margin-top:
+      var(--space-4);
+  }
+
+  .menu-modal-details {
+    margin-top:
+      var(--space-5);
+
+    padding-top:
+      var(--space-4);
+  }
+
+
+  /* =======================================================
+     Coffee Navigation Transition
+  ======================================================= */
+
+  .pour-animation {
+    transform:
+      scale(0.92);
   }
 
 
@@ -410,6 +717,7 @@
 
   .footer-inner {
     flex-direction: column;
+
     align-items: flex-start;
   }
 
@@ -428,43 +736,93 @@
 
   :root {
     --container-padding: 18px;
+
+    --space-9: 3.4rem;
   }
 
 
-  /* Hero */
+  /* =======================================================
+     Hero
+  ======================================================= */
+
+  .hero {
+    padding-bottom:
+      var(--space-7);
+  }
 
   .hero h1 {
     font-size:
-      clamp(2.7rem, 14vw, 4.2rem);
+      clamp(
+        2.7rem,
+        14vw,
+        4.2rem
+      );
+  }
+
+  .hero-description br {
+    /*
+     * On very narrow screens
+     * allow the browser to handle wrapping
+     * more naturally
+     */
+    display: none;
   }
 
   .hero-actions {
     align-items: flex-start;
+
     flex-direction: column;
   }
 
   .hero-visual-card {
-    width: min(88vw, 350px);
+    width:
+      min(
+        88vw,
+        350px
+      );
   }
 
 
-  /* Section */
+  /* =======================================================
+     Section Heading
+  ======================================================= */
 
   .section-heading,
   .section-heading-main {
-    gap: var(--space-3);
+    grid-template-columns:
+      25px
+      minmax(0, 1fr);
+
+    column-gap:
+      10px;
   }
 
   .section-description {
-    margin-left: 27px;
+    margin-left:
+      35px;
   }
 
 
-  /* Concept */
+  /* =======================================================
+     Concept
+  ======================================================= */
+
+  .concept-copy br {
+    /*
+     * Preserve the main lead line break
+     * but let normal paragraphs wrap naturally
+     */
+  }
+
+  .concept-copy
+  p:not(.lead-text)
+  br {
+    display: none;
+  }
 
   .value-item {
     grid-template-columns:
-      36px
+      34px
       minmax(0, 1fr);
 
     gap:
@@ -472,47 +830,134 @@
       var(--space-3);
   }
 
+  .value-item h3 {
+    align-self:
+      start;
+  }
+
   .value-item p {
-    grid-column: 2;
+    grid-column:
+      2;
   }
 
 
-  /* Menu */
+  /* =======================================================
+     Menu
+  ======================================================= */
 
   .menu-grid {
     grid-template-columns: 1fr;
   }
 
   .menu-card-visual {
-    aspect-ratio: 16 / 9;
+    aspect-ratio:
+      16 / 9;
   }
 
 
-  /* Shop */
+  /* =======================================================
+     News
+  ======================================================= */
+
+  .news-item {
+    grid-template-columns:
+      100px
+      minmax(0, 1fr);
+  }
+
+
+  /* =======================================================
+     Shop
+  ======================================================= */
 
   .shop-visual {
-    min-height: 330px;
+    min-height: 270px;
+  }
+
+  .shop-visual-content strong {
+    font-size:
+      clamp(
+        2.1rem,
+        12vw,
+        3.3rem
+      );
   }
 
   .information-row {
     grid-template-columns: 1fr;
-    gap: var(--space-2);
+
+    gap:
+      var(--space-1);
   }
 
 
-  /* Contact */
+  /* =======================================================
+     Contact
+  ======================================================= */
+
+  .contact-panel {
+    padding:
+      var(--space-6)
+      var(--space-5);
+  }
 
   .contact-copy h2 {
     font-size:
-      clamp(2.5rem, 13vw, 4rem);
+      clamp(
+        2.4rem,
+        13vw,
+        3.8rem
+      );
+  }
+
+  .contact-copy > p:last-child br {
+    display: none;
   }
 
 
-  /* Menu modal */
+  /* =======================================================
+     Modal
+  ======================================================= */
+
+  .modal {
+    padding:
+      10px;
+  }
+
+  .modal-dialog,
+  .menu-modal-dialog {
+    max-height:
+      calc(
+        100dvh -
+        20px
+      );
+
+    padding:
+      58px
+      var(--space-4)
+      var(--space-4);
+  }
+
+  .menu-modal-visual {
+    max-height:
+      220px;
+  }
 
   .menu-modal-detail {
     grid-template-columns: 1fr;
-    gap: var(--space-1);
+
+    gap:
+      var(--space-1);
+  }
+
+
+  /* =======================================================
+     Coffee Transition
+  ======================================================= */
+
+  .pour-animation {
+    transform:
+      scale(0.82);
   }
 }
 
@@ -528,64 +973,60 @@
     --container-padding: 15px;
   }
 
+
+  /* Header */
+
   .brand-text {
     display: none;
   }
 
+
+  /* Hero */
+
   .hero h1 {
-    font-size: 2.7rem;
+    font-size:
+      2.65rem;
   }
 
+
+  /* Filters */
+
   .filter-list {
-    gap: var(--space-2);
+    gap:
+      var(--space-2);
   }
 
   .filter-button {
+    min-height:
+      36px;
+
     padding:
       7px
-      13px;
+      12px;
   }
 
-  .modal {
-    padding: 10px;
+
+  /* Shop */
+
+  .shop-visual {
+    min-height:
+      240px;
   }
 
-  .modal-dialog {
+
+  /* Modal */
+
+  .menu-modal-visual {
     max-height:
-      calc(100dvh - 20px);
-
-    padding:
-      var(--space-7)
-      var(--space-4)
-      var(--space-4);
+      190px;
   }
 }
 
 
 /* =========================================================
-   Hover-capable devices only
+   Short Landscape Mobile
 
-   Prevent touch devices from retaining unnecessary
-   hover states.
-========================================================= */
-
-@media (hover: none) {
-
-  .button:hover,
-  .menu-card:hover {
-    transform: none;
-  }
-
-  .global-nav a:hover::after {
-    width: 0;
-  }
-}
-
-
-/* =========================================================
-   Landscape mobile
-
-   Avoid oversized navigation when the screen is short.
+   Prevent navigation from becoming too tall
 ========================================================= */
 
 @media
@@ -594,13 +1035,76 @@
   and (orientation: landscape) {
 
   .global-nav {
-    padding-top: var(--space-4);
+    padding-top:
+      var(--space-3);
   }
 
   .global-nav a {
-    padding: 10px 0;
+    padding:
+      9px
+      0;
 
-    font-family: var(--font-sans);
-    font-size: var(--font-size-md);
+    font-family:
+      var(--font-sans);
+
+    font-size:
+      var(--font-size-md);
+  }
+
+  .menu-modal-layout {
+    grid-template-columns:
+      minmax(180px, 0.75fr)
+      minmax(0, 1.25fr);
+  }
+
+  .menu-modal-visual {
+    max-height:
+      300px;
+
+    aspect-ratio:
+      4 / 5;
+  }
+}
+
+
+/* =========================================================
+   Touch Devices
+
+   Avoid sticky hover effects
+========================================================= */
+
+@media (hover: none) {
+
+  .button:hover,
+  .menu-card:hover {
+    transform:
+      none;
+  }
+
+  .global-nav a:hover::after {
+    width:
+      0;
+  }
+}
+
+
+/* =========================================================
+   Reduced Motion
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .pour-animation,
+  .pour-pot,
+  .pour-stream,
+  .pour-coffee,
+  .pour-label {
+    animation:
+      none !important;
+  }
+
+  .page-transition {
+    transition:
+      none;
   }
 }
