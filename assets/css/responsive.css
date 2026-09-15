@@ -1,0 +1,606 @@
+/* =========================================================
+   NORTH COFFEE
+   responsive.css
+
+   Responsibilities:
+   - Tablet overrides
+   - Mobile overrides
+   - Small-screen adjustments
+
+   Desktop-first:
+   Base layout is defined in the other CSS files.
+========================================================= */
+
+
+/* =========================================================
+   Tablet
+   <= 1024px
+========================================================= */
+
+@media (max-width: 1024px) {
+
+  :root {
+    --container-padding: 32px;
+    --space-10: 6.5rem;
+  }
+
+
+  /* Header */
+
+  .global-nav {
+    gap: 1.6rem;
+  }
+
+
+  /* Hero */
+
+  .hero {
+    min-height: 700px;
+  }
+
+  .hero-inner {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(280px, 0.72fr);
+
+    gap: 3.5rem;
+  }
+
+  .hero-visual {
+    min-height: 450px;
+  }
+
+
+  /* Section */
+
+  .section-heading-row {
+    align-items: flex-start;
+  }
+
+
+  /* Concept */
+
+  .concept-grid {
+    gap: 4rem;
+  }
+
+  .value-item {
+    grid-template-columns:
+      42px
+      90px
+      minmax(0, 1fr);
+
+    gap: var(--space-4);
+  }
+
+
+  /* Menu */
+
+  .menu-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+
+  /* Shop */
+
+  .shop-grid {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(300px, 0.85fr);
+  }
+
+  .shop-visual {
+    min-height: 460px;
+  }
+
+
+  /* Contact */
+
+  .contact-panel {
+    min-height: 350px;
+  }
+}
+
+
+/* =========================================================
+   Mobile / Tablet portrait
+   <= 768px
+========================================================= */
+
+@media (max-width: 768px) {
+
+  :root {
+    --container-padding: 22px;
+    --header-height: 70px;
+
+    --space-8: 3rem;
+    --space-9: 4.5rem;
+    --space-10: 5.5rem;
+  }
+
+
+  /* =======================================================
+     Header
+  ======================================================= */
+
+  .site-header {
+    height: var(--header-height);
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+
+    font-size: 1rem;
+  }
+
+  .brand-text strong {
+    font-size: 0.75rem;
+  }
+
+  .brand-text span {
+    font-size: 0.52rem;
+  }
+
+
+  /* =======================================================
+     Mobile Navigation
+  ======================================================= */
+
+  .nav-toggle {
+    z-index: 1002;
+
+    display: inline-flex;
+  }
+
+  .global-nav {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+
+    width: 100%;
+    height: calc(100dvh - var(--header-height));
+
+    padding:
+      48px
+      var(--container-padding)
+      40px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+
+    overflow-y: auto;
+
+    background:
+      rgba(242, 238, 230, 0.985);
+
+    visibility: hidden;
+    opacity: 0;
+
+    transform: translateY(-12px);
+
+    pointer-events: none;
+
+    transition:
+      opacity var(--duration-normal) var(--ease-standard),
+      visibility var(--duration-normal) var(--ease-standard),
+      transform var(--duration-normal) var(--ease-standard);
+  }
+
+  .global-nav.is-open {
+    visibility: visible;
+    opacity: 1;
+
+    transform: translateY(0);
+
+    pointer-events: auto;
+  }
+
+  .global-nav a {
+    width: 100%;
+    padding: 18px 0;
+
+    border-bottom:
+      1px solid var(--color-border);
+
+    color: var(--color-text);
+
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 7vw, 2rem);
+  }
+
+  .global-nav a::after {
+    display: none;
+  }
+
+
+  /* =======================================================
+     Hero
+  ======================================================= */
+
+  .hero {
+    min-height: auto;
+
+    padding:
+      calc(var(--header-height) + 55px)
+      0
+      var(--space-9);
+  }
+
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .hero-content {
+    max-width: 620px;
+  }
+
+  .hero h1 {
+    max-width: 560px;
+
+    font-size:
+      clamp(3rem, 13vw, 5rem);
+  }
+
+  .hero-description {
+    max-width: 520px;
+  }
+
+  .hero-visual {
+    min-height: auto;
+  }
+
+  .hero-visual-card {
+    width: min(82vw, 380px);
+  }
+
+
+  /* =======================================================
+     Generic Sections
+  ======================================================= */
+
+  .section-heading {
+    margin-bottom: var(--space-7);
+  }
+
+  .section-heading-row {
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .section-heading-main {
+    width: 100%;
+  }
+
+  .section-description {
+    max-width: 520px;
+    margin-left: 37px;
+  }
+
+
+  /* =======================================================
+     Concept
+  ======================================================= */
+
+  .concept-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-7);
+  }
+
+  .concept-copy {
+    max-width: 620px;
+  }
+
+  .concept-values {
+    width: 100%;
+  }
+
+  .value-item {
+    grid-template-columns:
+      42px
+      100px
+      minmax(0, 1fr);
+  }
+
+
+  /* =======================================================
+     Menu
+  ======================================================= */
+
+  .menu-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: var(--space-4);
+  }
+
+  .menu-card-content {
+    padding: var(--space-4);
+  }
+
+
+  /* =======================================================
+     News
+  ======================================================= */
+
+  .news-item {
+    padding: var(--space-5) 0;
+
+    grid-template-columns:
+      110px
+      minmax(0, 1fr);
+
+    gap:
+      var(--space-2)
+      var(--space-4);
+  }
+
+  .news-item h3 {
+    grid-column: 1 / -1;
+
+    margin-top: var(--space-2);
+  }
+
+
+  /* =======================================================
+     Shop
+  ======================================================= */
+
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shop-visual {
+    min-height: 390px;
+  }
+
+  .shop-information {
+    padding:
+      var(--space-7)
+      var(--space-5);
+  }
+
+
+  /* =======================================================
+     Contact
+  ======================================================= */
+
+  .contact-panel {
+    min-height: auto;
+
+    padding:
+      var(--space-7)
+      var(--space-5);
+
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .contact-panel .button {
+    margin-top: var(--space-3);
+  }
+
+
+  /* =======================================================
+     Modal
+  ======================================================= */
+
+  .modal {
+    padding: var(--space-4);
+  }
+
+  .modal-dialog {
+    max-height:
+      calc(100dvh - 32px);
+
+    padding:
+      var(--space-7)
+      var(--space-5)
+      var(--space-5);
+  }
+
+
+  /* =======================================================
+     Footer
+  ======================================================= */
+
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer-meta {
+    text-align: left;
+  }
+}
+
+
+/* =========================================================
+   Small Mobile
+   <= 560px
+========================================================= */
+
+@media (max-width: 560px) {
+
+  :root {
+    --container-padding: 18px;
+  }
+
+
+  /* Hero */
+
+  .hero h1 {
+    font-size:
+      clamp(2.7rem, 14vw, 4.2rem);
+  }
+
+  .hero-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hero-visual-card {
+    width: min(88vw, 350px);
+  }
+
+
+  /* Section */
+
+  .section-heading,
+  .section-heading-main {
+    gap: var(--space-3);
+  }
+
+  .section-description {
+    margin-left: 27px;
+  }
+
+
+  /* Concept */
+
+  .value-item {
+    grid-template-columns:
+      36px
+      minmax(0, 1fr);
+
+    gap:
+      var(--space-2)
+      var(--space-3);
+  }
+
+  .value-item p {
+    grid-column: 2;
+  }
+
+
+  /* Menu */
+
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-card-visual {
+    aspect-ratio: 16 / 9;
+  }
+
+
+  /* Shop */
+
+  .shop-visual {
+    min-height: 330px;
+  }
+
+  .information-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+
+
+  /* Contact */
+
+  .contact-copy h2 {
+    font-size:
+      clamp(2.5rem, 13vw, 4rem);
+  }
+
+
+  /* Menu modal */
+
+  .menu-modal-detail {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+}
+
+
+/* =========================================================
+   Very Small Mobile
+   <= 380px
+========================================================= */
+
+@media (max-width: 380px) {
+
+  :root {
+    --container-padding: 15px;
+  }
+
+  .brand-text {
+    display: none;
+  }
+
+  .hero h1 {
+    font-size: 2.7rem;
+  }
+
+  .filter-list {
+    gap: var(--space-2);
+  }
+
+  .filter-button {
+    padding:
+      7px
+      13px;
+  }
+
+  .modal {
+    padding: 10px;
+  }
+
+  .modal-dialog {
+    max-height:
+      calc(100dvh - 20px);
+
+    padding:
+      var(--space-7)
+      var(--space-4)
+      var(--space-4);
+  }
+}
+
+
+/* =========================================================
+   Hover-capable devices only
+
+   Prevent touch devices from retaining unnecessary
+   hover states.
+========================================================= */
+
+@media (hover: none) {
+
+  .button:hover,
+  .menu-card:hover {
+    transform: none;
+  }
+
+  .global-nav a:hover::after {
+    width: 0;
+  }
+}
+
+
+/* =========================================================
+   Landscape mobile
+
+   Avoid oversized navigation when the screen is short.
+========================================================= */
+
+@media
+  (max-width: 768px)
+  and (max-height: 520px)
+  and (orientation: landscape) {
+
+  .global-nav {
+    padding-top: var(--space-4);
+  }
+
+  .global-nav a {
+    padding: 10px 0;
+
+    font-family: var(--font-sans);
+    font-size: var(--font-size-md);
+  }
+}
