@@ -1,11 +1,12 @@
 /**
- * Menu UI module
+ * NORTH COFFEE
+ * Menu UI Module
  *
  * Responsibilities:
  * - Render category filters
- * - Render menu cards
  * - Filter menu items
- * - Dispatch menu selection event
+ * - Render menu cards
+ * - Dispatch product selection events
  */
 
 import {
@@ -21,17 +22,61 @@ const SELECTORS = Object.freeze({
 });
 
 
-const EVENTS = Object.freeze({
-  menuSelected: "menu:selected",
+export const MENU_EVENTS = Object.freeze({
+  SELECTED: "menu:selected",
 });
 
 
-const formatPrice = (price) => {
-  return new Intl.NumberFormat("ja-JP", {
+const priceFormatter =
+  new Intl.NumberFormat("ja-JP", {
     style: "currency",
     currency: "JPY",
     maximumFractionDigits: 0,
-  }).format(price);
+  });
+
+
+const formatPrice = (price) => {
+  return priceFormatter.format(price);
+};
+
+
+const getCategories = () => {
+  return [
+    MENU_CATEGORIES.ALL,
+    ...new Set(
+      menuItems.map(
+        (item) => item.category
+      )
+    ),
+  ];
+};
+
+
+const getFilteredItems = (
+  category
+) => {
+  if (
+    category ===
+    MENU_CATEGORIES.ALL
+  ) {
+    return menuItems;
+  }
+
+  return menuItems.filter(
+    (item) =>
+      item.category === category
+  );
+};
+
+
+export const getMenuItemById = (
+  id
+) => {
+  return (
+    menuItems.find(
+      (item) => item.id === id
+    ) ?? null
+  );
 };
 
 
@@ -39,19 +84,28 @@ const createFilterButton = (
   category,
   activeCategory
 ) => {
-  const button = document.createElement("button");
+  const button =
+    document.createElement("button");
+
+  const isActive =
+    category === activeCategory;
 
   button.type = "button";
-  button.className = "filter-button";
 
-  button.dataset.category = category;
+  button.className =
+    "filter-button";
+
+  button.dataset.category =
+    category;
 
   button.textContent =
-    CATEGORY_LABELS[category] ?? category.toUpperCase();
+    CATEGORY_LABELS[category] ??
+    category.toUpperCase();
 
-  const isActive = category === activeCategory;
-
-  button.classList.toggle("is-active", isActive);
+  button.classList.toggle(
+    "is-active",
+    isActive
+  );
 
   button.setAttribute(
     "aria-pressed",
@@ -62,16 +116,26 @@ const createFilterButton = (
 };
 
 
-const createMenuCard = (item) => {
-  const article = document.createElement("article");
+const createMenuCard = (
+  item
+) => {
+  const article =
+    document.createElement("article");
 
-  article.className = "menu-card";
-  article.dataset.menuId = item.id;
+  article.className =
+    "menu-card";
 
-  const button = document.createElement("button");
+  article.dataset.menuId =
+    item.id;
+
+
+  const button =
+    document.createElement("button");
 
   button.type = "button";
-  button.className = "menu-card-button";
+
+  button.className =
+    "menu-card-button";
 
   button.setAttribute(
     "aria-label",
@@ -79,52 +143,77 @@ const createMenuCard = (item) => {
   );
 
 
-  const visual = document.createElement("div");
+  const visual =
+    document.createElement("div");
 
-  visual.className = "menu-card-visual";
+  visual.className =
+    "menu-card-visual";
 
-  const symbol = document.createElement("span");
 
-  symbol.className = "menu-card-symbol";
-  symbol.textContent = item.symbol;
+  const symbol =
+    document.createElement("span");
+
+  symbol.className =
+    "menu-card-symbol";
+
+  symbol.textContent =
+    item.symbol;
 
   visual.append(symbol);
 
 
-  const content = document.createElement("div");
+  const content =
+    document.createElement("div");
 
-  content.className = "menu-card-content";
-
-
-  const meta = document.createElement("div");
-
-  meta.className = "menu-card-meta";
+  content.className =
+    "menu-card-content";
 
 
-  const category = document.createElement("span");
+  const meta =
+    document.createElement("div");
 
-  category.className = "menu-card-category";
+  meta.className =
+    "menu-card-meta";
+
+
+  const category =
+    document.createElement("span");
+
+  category.className =
+    "menu-card-category";
 
   category.textContent =
-    CATEGORY_LABELS[item.category] ??
+    CATEGORY_LABELS[
+      item.category
+    ] ??
     item.category.toUpperCase();
 
 
-  const price = document.createElement("span");
+  const price =
+    document.createElement("span");
 
-  price.className = "menu-card-price";
-  price.textContent = formatPrice(item.price);
+  price.className =
+    "menu-card-price";
 
-
-  meta.append(category, price);
-
-
-  const title = document.createElement("h3");
-
-  title.textContent = item.name;
+  price.textContent =
+    formatPrice(item.price);
 
 
-  const description = document.createElement("p");
+  meta.append(
+    category,
+    price
+  );
+
+
+  const title =
+    document.createElement("h3");
+
+  title.textContent =
+    item.name;
+
+
+  const description =
+    document.createElement("p");
 
   description.className =
     "menu-card-description";
@@ -146,48 +235,26 @@ const createMenuCard = (item) => {
   );
 
 
-  button.addEventListener("click", () => {
-    document.dispatchEvent(
-      new CustomEvent(EVENTS.menuSelected, {
-        detail: {
-          itemId: item.id,
-        },
-      })
-    );
-  });
+  button.addEventListener(
+    "click",
+    () => {
+      document.dispatchEvent(
+        new CustomEvent(
+          MENU_EVENTS.SELECTED,
+          {
+            detail: {
+              itemId: item.id,
+            },
+          }
+        )
+      );
+    }
+  );
 
 
   article.append(button);
 
   return article;
-};
-
-
-const getCategories = () => {
-  return [
-    MENU_CATEGORIES.ALL,
-    ...new Set(
-      menuItems.map((item) => item.category)
-    ),
-  ];
-};
-
-
-const filterItems = (category) => {
-  if (category === MENU_CATEGORIES.ALL) {
-    return menuItems;
-  }
-
-  return menuItems.filter(
-    (item) => item.category === category
-  );
-};
-
-
-export const getMenuItemById = (id) => {
-  return menuItems.find(
-    (item) => item.id === id
-  ) ?? null;
 };
 
 
@@ -203,7 +270,10 @@ export const initMenu = () => {
     );
 
 
-  if (!filterContainer || !menuList) {
+  if (
+    !filterContainer ||
+    !menuList
+  ) {
     return;
   }
 
@@ -214,22 +284,25 @@ export const initMenu = () => {
 
   const renderMenu = () => {
     const items =
-      filterItems(activeCategory);
+      getFilteredItems(
+        activeCategory
+      );
+
 
     menuList.replaceChildren();
 
 
     if (items.length === 0) {
-      const emptyMessage =
+      const message =
         document.createElement("p");
 
-      emptyMessage.className =
+      message.className =
         "menu-empty";
 
-      emptyMessage.textContent =
-        "該当するメニューはありません。";
+      message.textContent =
+        "該当するメニューはありません";
 
-      menuList.append(emptyMessage);
+      menuList.append(message);
 
       return;
     }
@@ -267,13 +340,15 @@ export const initMenu = () => {
           "click",
           () => {
             if (
-              activeCategory === category
+              activeCategory ===
+              category
             ) {
               return;
             }
 
 
-            activeCategory = category;
+            activeCategory =
+              category;
 
             renderFilters();
             renderMenu();
@@ -281,7 +356,9 @@ export const initMenu = () => {
         );
 
 
-        filterContainer.append(button);
+        filterContainer.append(
+          button
+        );
       }
     );
   };
