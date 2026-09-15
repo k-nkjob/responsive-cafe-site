@@ -1,117 +1,135 @@
 /**
- * Navigation module
+ * NORTH COFFEE
+ * Navigation Module
  *
  * Responsibilities:
- * - Mobile navigation toggle
- * - aria-expanded synchronization
- * - Body scroll lock
- * - Close navigation after link selection
+ * - Mobile menu open / close
+ * - aria state synchronization
+ * - Escape key support
+ * - Close after navigation
  */
 
 const SELECTORS = Object.freeze({
-  navigation: "[data-navigation]",
-  toggle: "[data-nav-toggle]",
+  navigation:
+    "[data-navigation]",
+
+  toggle:
+    "[data-nav-toggle]",
 });
 
 
-export const initNavigation = () => {
-  const navigation =
-    document.querySelector(
-      SELECTORS.navigation
-    );
-
-  const toggle =
-    document.querySelector(
-      SELECTORS.toggle
-    );
+const MOBILE_BREAKPOINT =
+  768;
 
 
-  if (!navigation || !toggle) {
-    return;
-  }
+export const initNavigation =
+  () => {
+
+    const navigation =
+      document.querySelector(
+        SELECTORS.navigation
+      );
+
+    const toggle =
+      document.querySelector(
+        SELECTORS.toggle
+      );
 
 
-  const setNavigationState = (
-    isOpen
-  ) => {
-    navigation.classList.toggle(
-      "is-open",
+    if (
+      !navigation ||
+      !toggle
+    ) {
+      return;
+    }
+
+
+    const setState = (
       isOpen
+    ) => {
+      navigation.classList.toggle(
+        "is-open",
+        isOpen
+      );
+
+      toggle.classList.toggle(
+        "is-active",
+        isOpen
+      );
+
+      toggle.setAttribute(
+        "aria-expanded",
+        String(isOpen)
+      );
+
+      toggle.setAttribute(
+        "aria-label",
+        isOpen
+          ? "メニューを閉じる"
+          : "メニューを開く"
+      );
+
+      document.body.classList.toggle(
+        "is-locked",
+        isOpen
+      );
+    };
+
+
+    const close = () => {
+      setState(false);
+    };
+
+
+    toggle.addEventListener(
+      "click",
+      () => {
+        const isOpen =
+          toggle.getAttribute(
+            "aria-expanded"
+          ) === "true";
+
+        setState(!isOpen);
+      }
     );
 
-    toggle.classList.toggle(
-      "is-active",
-      isOpen
+
+    navigation.addEventListener(
+      "click",
+      (event) => {
+        const link =
+          event.target.closest("a");
+
+        if (!link) {
+          return;
+        }
+
+        close();
+      }
     );
 
-    toggle.setAttribute(
-      "aria-expanded",
-      String(isOpen)
+
+    document.addEventListener(
+      "keydown",
+      (event) => {
+        if (
+          event.key === "Escape"
+        ) {
+          close();
+        }
+      }
     );
 
-    toggle.setAttribute(
-      "aria-label",
-      isOpen
-        ? "メニューを閉じる"
-        : "メニューを開く"
-    );
 
-    document.body.classList.toggle(
-      "is-locked",
-      isOpen
+    window.addEventListener(
+      "resize",
+      () => {
+        if (
+          window.innerWidth >
+          MOBILE_BREAKPOINT
+        ) {
+          close();
+        }
+      }
     );
   };
-
-
-  const closeNavigation = () => {
-    setNavigationState(false);
-  };
-
-
-  toggle.addEventListener(
-    "click",
-    () => {
-      const isOpen =
-        toggle.getAttribute(
-          "aria-expanded"
-        ) === "true";
-
-      setNavigationState(!isOpen);
-    }
-  );
-
-
-  navigation.addEventListener(
-    "click",
-    (event) => {
-      const link =
-        event.target.closest("a");
-
-      if (!link) {
-        return;
-      }
-
-      closeNavigation();
-    }
-  );
-
-
-  window.addEventListener(
-    "resize",
-    () => {
-      if (window.innerWidth > 768) {
-        closeNavigation();
-      }
-    }
-  );
-
-
-  document.addEventListener(
-    "keydown",
-    (event) => {
-      if (event.key === "Escape") {
-        closeNavigation();
-      }
-    }
-  );
-};
