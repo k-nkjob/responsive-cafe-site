@@ -1,10 +1,13 @@
 /**
  * NORTH COFFEE
- * menu.js
+ * Menu Master Data
  *
- * Menu master data.
+ * Responsibilities:
+ * - Menu categories
+ * - Category labels
+ * - Product master data
  *
- * UI rendering logic must not be placed in this file.
+ * UI logic must not be placed in this file.
  */
 
 export const MENU_CATEGORIES = Object.freeze({
@@ -30,8 +33,13 @@ export const menuItems = Object.freeze([
     category: MENU_CATEGORIES.COFFEE,
     price: 520,
     symbol: "H",
+
+    image:
+      "assets/images/menu/house-blend.jpg",
+
     description:
-      "チョコレートのような甘さと、やわらかな余韻を楽しめる定番ブレンド。",
+      "チョコレートのような甘さとやわらかな余韻を楽しめる定番ブレンド",
+
     details: {
       roast: "Medium",
       origin: "Brazil / Colombia",
@@ -45,8 +53,13 @@ export const menuItems = Object.freeze([
     category: MENU_CATEGORIES.COFFEE,
     price: 620,
     symbol: "S",
+
+    image:
+      "assets/images/menu/single-origin.jpg",
+
     description:
-      "季節ごとに豆を選定。産地ならではの香りと個性を楽しめます。",
+      "季節ごとに豆を選定し産地ならではの香りと個性を引き出します",
+
     details: {
       roast: "Light - Medium",
       origin: "Seasonal Selection",
@@ -60,8 +73,13 @@ export const menuItems = Object.freeze([
     category: MENU_CATEGORIES.COFFEE,
     price: 580,
     symbol: "C",
+
+    image:
+      "assets/images/menu/cold-brew.jpg",
+
     description:
-      "時間をかけて低温抽出した、すっきりとした口当たりのコーヒー。",
+      "時間をかけて低温抽出したすっきりとした口当たりのコーヒー",
+
     details: {
       roast: "Medium - Dark",
       origin: "Blend",
@@ -75,8 +93,13 @@ export const menuItems = Object.freeze([
     category: MENU_CATEGORIES.LATTE,
     price: 600,
     symbol: "L",
+
+    image:
+      "assets/images/menu/cafe-latte.jpg",
+
     description:
-      "エスプレッソとミルクの甘さをバランスよく仕上げた定番ラテ。",
+      "エスプレッソとミルクの甘さをバランスよく仕上げた定番ラテ",
+
     details: {
       roast: "Dark",
       origin: "Espresso Blend",
@@ -90,8 +113,13 @@ export const menuItems = Object.freeze([
     category: MENU_CATEGORIES.LATTE,
     price: 650,
     symbol: "M",
+
+    image:
+      "assets/images/menu/maple-latte.jpg",
+
     description:
-      "メープルの穏やかな甘さを加えた、香り豊かなカフェラテ。",
+      "メープルの穏やかな甘さを加えた香り豊かなカフェラテ",
+
     details: {
       roast: "Dark",
       origin: "Espresso Blend",
@@ -105,8 +133,13 @@ export const menuItems = Object.freeze([
     category: MENU_CATEGORIES.SEASONAL,
     price: 680,
     symbol: "A",
+
+    image:
+      "assets/images/menu/autumn-blend.jpg",
+
     description:
-      "秋をイメージした、深い甘さとスパイス感のある季節限定ブレンド。",
+      "秋をイメージした深い甘さとスパイス感のある季節限定ブレンド",
+
     details: {
       roast: "Medium - Dark",
       origin: "Seasonal Blend",
