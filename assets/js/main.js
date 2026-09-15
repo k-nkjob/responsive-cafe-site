@@ -1,9 +1,9 @@
 /**
  * NORTH COFFEE
- * Application entry point
+ * Application Entry Point
  *
- * Individual features are initialized here.
- * Feature implementation belongs in modules/.
+ * Feature implementations live in modules/.
+ * This file only coordinates initialization.
  */
 
 import {
@@ -24,18 +24,18 @@ import {
 
 
 const setCurrentYear = () => {
-  const yearElement =
+  const element =
     document.querySelector(
       "[data-current-year]"
     );
 
 
-  if (!yearElement) {
+  if (!element) {
     return;
   }
 
 
-  yearElement.textContent =
+  element.textContent =
     String(
       new Date().getFullYear()
     );
@@ -44,7 +44,13 @@ const setCurrentYear = () => {
 
 const initApplication = () => {
   initNavigation();
+
+  /*
+   * Menu must be initialized before
+   * modal interaction starts.
+   */
   initMenu();
+
   initModals();
   initScroll();
 
