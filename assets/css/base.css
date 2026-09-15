@@ -2,13 +2,16 @@
    NORTH COFFEE
    base.css
 
-   Responsibilities:
+   Responsibilities
    - Design tokens
-   - Reset / normalization
-   - Base typography
-   - Shared element defaults
+   - Reset
+   - Typography foundation
+   - Shared document styles
+   - Accessibility foundation
 
-   Layout and component-specific styles do not belong here.
+   Layout       -> layout.css
+   Components   -> components.css
+   Responsive   -> responsive.css
 ========================================================= */
 
 
@@ -17,7 +20,11 @@
 ========================================================= */
 
 :root {
-  /* Colors */
+
+  /* -------------------------------------------------------
+     Colors
+  ------------------------------------------------------- */
+
   --color-bg: #f2eee6;
   --color-bg-soft: #e8e1d6;
   --color-surface: #fffdf8;
@@ -33,10 +40,17 @@
   --color-accent-dark: #98452a;
   --color-accent-soft: #e9c5b5;
 
-  --color-border: rgba(32, 37, 31, 0.14);
-  --color-border-light: rgba(255, 255, 255, 0.18);
+  --color-border:
+    rgba(32, 37, 31, 0.14);
 
-  /* Typography */
+  --color-border-light:
+    rgba(255, 255, 255, 0.18);
+
+
+  /* -------------------------------------------------------
+     Typography
+  ------------------------------------------------------- */
+
   --font-sans:
     -apple-system,
     BlinkMacSystemFont,
@@ -60,7 +74,11 @@
     "Liberation Mono",
     monospace;
 
-  /* Font sizes */
+
+  /* -------------------------------------------------------
+     Font Sizes
+  ------------------------------------------------------- */
+
   --font-size-xs: 0.72rem;
   --font-size-sm: 0.84rem;
   --font-size-md: 1rem;
@@ -68,56 +86,99 @@
   --font-size-xl: 1.55rem;
   --font-size-2xl: 2.1rem;
 
-  /* Font weights */
+
+  /* -------------------------------------------------------
+     Font Weights
+  ------------------------------------------------------- */
+
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  /* Spacing */
+
+  /* -------------------------------------------------------
+     Spacing Scale
+
+     Large spacing has intentionally been reduced
+     from the first version
+  ------------------------------------------------------- */
+
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
   --space-5: 1.5rem;
   --space-6: 2rem;
-  --space-7: 3rem;
-  --space-8: 4rem;
-  --space-9: 6rem;
-  --space-10: 8rem;
+  --space-7: 2.75rem;
+  --space-8: 3.5rem;
+  --space-9: 4.75rem;
+  --space-10: 6.25rem;
 
-  /* Layout */
+
+  /* -------------------------------------------------------
+     Layout
+  ------------------------------------------------------- */
+
   --container-width: 1180px;
   --container-padding: 48px;
 
-  /* Borders */
+  --header-height: 82px;
+
+  /*
+   * Used by JavaScript-controlled anchor navigation
+   * to keep section headings visible below the fixed header
+   */
+  --anchor-gap: 10px;
+
+
+  /* -------------------------------------------------------
+     Border Radius
+  ------------------------------------------------------- */
+
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 22px;
   --radius-pill: 999px;
 
-  /* Shadows */
+
+  /* -------------------------------------------------------
+     Shadows
+  ------------------------------------------------------- */
+
   --shadow-sm:
-    0 6px 20px rgba(28, 33, 28, 0.06);
+    0 6px 20px
+    rgba(28, 33, 28, 0.06);
 
   --shadow-md:
-    0 18px 45px rgba(28, 33, 28, 0.1);
+    0 18px 45px
+    rgba(28, 33, 28, 0.1);
 
-  /* Animation */
+  --shadow-lg:
+    0 24px 80px
+    rgba(0, 0, 0, 0.22);
+
+
+  /* -------------------------------------------------------
+     Motion
+  ------------------------------------------------------- */
+
   --duration-fast: 160ms;
   --duration-normal: 260ms;
   --duration-slow: 420ms;
 
   --ease-standard:
-    cubic-bezier(0.2, 0.7, 0.2, 1);
-
-  /* Header */
-  --header-height: 82px;
+    cubic-bezier(
+      0.2,
+      0.7,
+      0.2,
+      1
+    );
 }
 
 
 /* =========================================================
-   Reset
+   Box Model
 ========================================================= */
 
 *,
@@ -126,16 +187,84 @@
   box-sizing: border-box;
 }
 
+
+/* =========================================================
+   Document
+========================================================= */
+
 html {
-  scroll-behavior: smooth;
-  scroll-padding-top: var(--header-height);
+  min-width: 320px;
+
+  background:
+    var(--color-bg);
+
+  /*
+   * Anchor movement is controlled by scroll.js
+   * so native smooth scrolling is intentionally disabled
+   */
+  scroll-behavior: auto;
+
+  scroll-padding-top:
+    calc(
+      var(--header-height) +
+      var(--anchor-gap)
+    );
 }
 
-body,
+body {
+  min-width: 320px;
+  min-height: 100vh;
+
+  margin: 0;
+
+  overflow-x: hidden;
+
+  background:
+    var(--color-bg);
+
+  color:
+    var(--color-text);
+
+  font-family:
+    var(--font-sans);
+
+  font-size:
+    var(--font-size-md);
+
+  font-weight:
+    var(--font-weight-regular);
+
+  line-height: 1.8;
+
+  letter-spacing:
+    0.025em;
+
+  -webkit-font-smoothing:
+    antialiased;
+
+  text-rendering:
+    optimizeLegibility;
+}
+
+
+/*
+ * Used while a modal or mobile navigation is open
+ */
+body.is-locked {
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   Reset
+========================================================= */
+
 h1,
 h2,
 h3,
 h4,
+h5,
+h6,
 p,
 figure,
 blockquote,
@@ -148,6 +277,7 @@ ul,
 ol {
   margin: 0;
   padding: 0;
+
   list-style: none;
 }
 
@@ -155,10 +285,14 @@ button,
 input,
 textarea,
 select {
+  margin: 0;
+
   font: inherit;
 }
 
 button {
+  padding: 0;
+
   border: 0;
 }
 
@@ -167,6 +301,7 @@ picture,
 svg,
 canvas {
   display: block;
+
   max-width: 100%;
 }
 
@@ -181,37 +316,8 @@ textarea {
 
 a {
   color: inherit;
+
   text-decoration: none;
-}
-
-
-/* =========================================================
-   Document
-========================================================= */
-
-html {
-  background: var(--color-bg);
-}
-
-body {
-  min-width: 320px;
-
-  background: var(--color-bg);
-  color: var(--color-text);
-
-  font-family: var(--font-sans);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-regular);
-
-  line-height: 1.8;
-  letter-spacing: 0.025em;
-
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-
-body.is-locked {
-  overflow: hidden;
 }
 
 
@@ -222,26 +328,38 @@ body.is-locked {
 h1,
 h2,
 h3,
-h4 {
-  color: var(--color-text);
-  font-weight: var(--font-weight-semibold);
+h4,
+h5,
+h6 {
+  color:
+    var(--color-text);
+
+  font-weight:
+    var(--font-weight-semibold);
+
+  overflow-wrap:
+    break-word;
 }
 
 h1,
 h2 {
-  font-family: var(--font-serif);
+  font-family:
+    var(--font-serif);
 }
 
 p {
-  overflow-wrap: break-word;
+  overflow-wrap:
+    break-word;
 }
 
 strong {
-  font-weight: var(--font-weight-bold);
+  font-weight:
+    var(--font-weight-bold);
 }
 
 small {
-  font-size: var(--font-size-sm);
+  font-size:
+    var(--font-size-sm);
 }
 
 
@@ -251,18 +369,27 @@ small {
 
 a,
 button {
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color:
+    transparent;
 }
 
 button {
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
+  background:
+    transparent;
+
+  color:
+    inherit;
+
+  cursor:
+    pointer;
 }
 
 button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
+  cursor:
+    not-allowed;
+
+  opacity:
+    0.55;
 }
 
 
@@ -273,26 +400,60 @@ button:disabled {
 input,
 textarea,
 select {
-  background: var(--color-surface);
-  color: var(--color-text);
+  background:
+    var(--color-surface);
 
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  color:
+    var(--color-text);
 
-  outline: none;
+  border:
+    1px solid
+    var(--color-border);
+
+  border-radius:
+    var(--radius-sm);
+
+  outline:
+    none;
 
   transition:
-    border-color var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
+    border-color
+      var(--duration-fast)
+      var(--ease-standard),
+
+    box-shadow
+      var(--duration-fast)
+      var(--ease-standard);
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: var(--color-accent);
+  border-color:
+    var(--color-accent);
 
   box-shadow:
-    0 0 0 3px rgba(188, 91, 54, 0.12);
+    0 0 0 3px
+    rgba(188, 91, 54, 0.12);
+}
+
+
+/* =========================================================
+   Shared Container
+========================================================= */
+
+.container {
+  width:
+    min(
+      calc(
+        100% -
+        (var(--container-padding) * 2)
+      ),
+      var(--container-width)
+    );
+
+  margin-inline:
+    auto;
 }
 
 
@@ -301,77 +462,114 @@ select:focus {
 ========================================================= */
 
 :focus-visible {
-  outline: 3px solid var(--color-accent);
-  outline-offset: 4px;
+  outline:
+    3px solid
+    var(--color-accent);
+
+  outline-offset:
+    4px;
 }
 
 :focus:not(:focus-visible) {
-  outline: none;
+  outline:
+    none;
 }
 
 [hidden] {
-  display: none !important;
+  display:
+    none !important;
+}
+
+
+/*
+ * Visually hidden but accessible
+ * to screen readers
+ */
+.visually-hidden {
+  position:
+    absolute;
+
+  width:
+    1px;
+
+  height:
+    1px;
+
+  padding:
+    0;
+
+  margin:
+    -1px;
+
+  overflow:
+    hidden;
+
+  clip:
+    rect(
+      0,
+      0,
+      0,
+      0
+    );
+
+  white-space:
+    nowrap;
+
+  border:
+    0;
 }
 
 
 /* =========================================================
-   Selection
+   Text Selection
 ========================================================= */
 
 ::selection {
-  background: var(--color-accent);
-  color: #ffffff;
+  background:
+    var(--color-accent);
+
+  color:
+    #ffffff;
 }
 
 
 /* =========================================================
-   Shared Utilities
-
-   Keep this section intentionally small.
-   Add only utilities that are truly reusable.
+   Shared State Utilities
 ========================================================= */
 
-.container {
-  width: min(
-    calc(100% - (var(--container-padding) * 2)),
-    var(--container-width)
-  );
-
-  margin-inline: auto;
-}
-
-.visually-hidden {
-  position: absolute;
-
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-
-  overflow: hidden;
-
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-
-  border: 0;
+.is-hidden {
+  display:
+    none !important;
 }
 
 
 /* =========================================================
    Reduced Motion
 
-   Respect operating-system accessibility preferences.
+   Users who disable animation at OS level should not
+   be forced to watch transitions
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
+
+  html {
+    scroll-behavior:
+      auto;
+  }
+
   *,
   *::before,
   *::after {
-    scroll-behavior: auto !important;
+    animation-duration:
+      0.01ms !important;
 
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
+    animation-iteration-count:
+      1 !important;
 
-    transition-duration: 0.01ms !important;
+    transition-duration:
+      0.01ms !important;
+
+    scroll-behavior:
+      auto !important;
   }
 }
