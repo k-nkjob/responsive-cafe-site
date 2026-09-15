@@ -2208,3 +2208,252 @@
   display:
     none !important;
 }
+
+/* =========================================================
+   Navigation Brewing Transition V2
+========================================================= */
+
+.page-transition {
+  background:
+    rgba(24, 29, 24, 0.985);
+
+  transition:
+    opacity 220ms ease,
+    visibility 220ms ease;
+}
+
+.page-transition.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+
+/* Coffee animation is intentionally larger
+   than the original version */
+.page-transition .pour-animation {
+  position: relative;
+
+  width: 240px;
+  min-height: 230px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ---------------------------------------------------------
+   Pot
+--------------------------------------------------------- */
+
+.page-transition.is-active
+.pour-pot {
+  animation:
+    nav-pot-pour
+    1.05s
+    ease-in-out
+    both;
+}
+
+
+/* ---------------------------------------------------------
+   Stream
+--------------------------------------------------------- */
+
+.page-transition.is-active
+.pour-stream {
+  animation:
+    nav-coffee-stream
+    1.05s
+    ease-in-out
+    both;
+}
+
+
+/* ---------------------------------------------------------
+   Coffee filling cup
+--------------------------------------------------------- */
+
+.page-transition.is-active
+.pour-coffee {
+  animation:
+    nav-coffee-fill
+    1.05s
+    ease-out
+    both;
+}
+
+
+/* ---------------------------------------------------------
+   BREWING
+--------------------------------------------------------- */
+
+.page-transition.is-active
+.pour-label {
+  animation:
+    nav-brewing-label
+    1.05s
+    ease-in-out
+    both;
+}
+
+
+/* ---------------------------------------------------------
+   Animations
+--------------------------------------------------------- */
+
+@keyframes nav-pot-pour {
+
+  0% {
+    transform:
+      translateX(-38px)
+      translateY(0)
+      rotate(-5deg);
+  }
+
+  22% {
+    transform:
+      translateX(-35px)
+      translateY(2px)
+      rotate(-12deg);
+  }
+
+  38%,
+  72% {
+    transform:
+      translateX(-28px)
+      translateY(6px)
+      rotate(-28deg);
+  }
+
+  100% {
+    transform:
+      translateX(-32px)
+      translateY(0)
+      rotate(-8deg);
+  }
+}
+
+
+@keyframes nav-coffee-stream {
+
+  0%,
+  24% {
+    height: 0;
+    opacity: 0;
+  }
+
+  34% {
+    height: 20px;
+    opacity: 1;
+  }
+
+  43%,
+  73% {
+    height: 72px;
+    opacity: 1;
+  }
+
+  86%,
+  100% {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+
+@keyframes nav-coffee-fill {
+
+  0%,
+  30% {
+    height: 0;
+  }
+
+  76% {
+    height: 31px;
+  }
+
+  100% {
+    height: 31px;
+  }
+}
+
+
+@keyframes nav-brewing-label {
+
+  0% {
+    opacity: 0;
+    letter-spacing: 0.3em;
+  }
+
+  25% {
+    opacity: 0.35;
+  }
+
+  45%,
+  78% {
+    opacity: 1;
+    letter-spacing: 0.22em;
+  }
+
+  100% {
+    opacity: 0.55;
+  }
+}
+
+
+/* =========================================================
+   News -> Shop Reveal
+========================================================= */
+
+.shop-section {
+  transition:
+    opacity 600ms var(--ease-standard),
+    transform 600ms var(--ease-standard);
+}
+
+
+/*
+ * Used only when navigation lands directly on NEWS
+ */
+.shop-section.is-navigation-hidden {
+  opacity: 0;
+
+  transform:
+    translateY(45px);
+
+  visibility: hidden;
+
+  pointer-events: none;
+}
+
+
+/*
+ * User starts scrolling down
+ */
+.shop-section.is-navigation-revealing {
+  animation:
+    shop-reveal-after-news
+    650ms
+    var(--ease-standard)
+    both;
+}
+
+
+@keyframes shop-reveal-after-news {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(45px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
