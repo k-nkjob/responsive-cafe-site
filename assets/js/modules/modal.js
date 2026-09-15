@@ -1,16 +1,20 @@
 /**
- * Modal module
+ * NORTH COFFEE
+ * Modal Module
  *
  * Responsibilities:
- * - Generic modal open / close behavior
+ * - Shared modal behavior
  * - Contact modal
  * - Menu detail modal
+ * - Menu image rendering
+ * - Image fallback
  * - Escape key handling
- * - Basic focus restoration
+ * - Focus restoration
  */
 
 import {
   getMenuItemById,
+  MENU_EVENTS,
 } from "./menu.js";
 
 
@@ -41,23 +45,62 @@ const SELECTORS = Object.freeze({
 });
 
 
-let activeModal = null;
-let previouslyFocusedElement = null;
+const DETAIL_LABELS =
+  Object.freeze({
+    roast: "Roast",
+    origin: "Origin",
+    taste: "Taste",
+  });
 
 
-const formatPrice = (price) => {
-  return new Intl.NumberFormat(
+const priceFormatter =
+  new Intl.NumberFormat(
     "ja-JP",
     {
       style: "currency",
       currency: "JPY",
       maximumFractionDigits: 0,
     }
-  ).format(price);
+  );
+
+
+let activeModal =
+  null;
+
+let previouslyFocusedElement =
+  null;
+
+
+const formatPrice = (
+  price
+) => {
+  return priceFormatter.format(
+    price
+  );
 };
 
 
-const openModal = (modal) => {
+const getFocusableElements = (
+  modal
+) => {
+  return [
+    ...modal.querySelectorAll(
+      [
+        "a[href]",
+        "button:not([disabled])",
+        "input:not([disabled])",
+        "textarea:not([disabled])",
+        "select:not([disabled])",
+        '[tabindex]:not([tabindex="-1"])',
+      ].join(",")
+    ),
+  ];
+};
+
+
+const openModal = (
+  modal
+) => {
   if (!modal) {
     return;
   }
@@ -67,7 +110,10 @@ const openModal = (modal) => {
     activeModal &&
     activeModal !== modal
   ) {
-    closeModal(activeModal, false);
+    closeModal(
+      activeModal,
+      false
+    );
   }
 
 
@@ -75,25 +121,29 @@ const openModal = (modal) => {
     document.activeElement;
 
 
-  modal.classList.add("is-open");
+  modal.classList.add(
+    "is-open"
+  );
 
   modal.setAttribute(
     "aria-hidden",
     "false"
   );
 
-
   document.body.classList.add(
     "is-locked"
   );
 
 
-  activeModal = modal;
+  activeModal =
+    modal;
 
 
-  const firstFocusable =
-    modal.querySelector(
-      "button, input, textarea, select, a[href]"
+  const [
+    firstFocusable,
+  ] =
+    getFocusableElements(
+      modal
     );
 
 
@@ -110,7 +160,9 @@ const closeModal = (
   }
 
 
-  modal.classList.remove("is-open");
+  modal.classList.remove(
+    "is-open"
+  );
 
   modal.setAttribute(
     "aria-hidden",
@@ -118,19 +170,22 @@ const closeModal = (
   );
 
 
-  document.body.classList.remove(
-    "is-locked"
-  );
+  if (
+    activeModal === modal
+  ) {
+    activeModal =
+      null;
 
-
-  if (activeModal === modal) {
-    activeModal = null;
+    document.body.classList.remove(
+      "is-locked"
+    );
   }
 
 
   if (
     restoreFocus &&
-    previouslyFocusedElement instanceof HTMLElement
+    previouslyFocusedElement
+      instanceof HTMLElement
   ) {
     previouslyFocusedElement.focus();
   }
@@ -151,13 +206,15 @@ const createDetailRow = (
   const term =
     document.createElement("dt");
 
-  term.textContent = label;
+  term.textContent =
+    label;
 
 
   const description =
     document.createElement("dd");
 
-  description.textContent = value;
+  description.textContent =
+    value;
 
 
   wrapper.append(
@@ -170,11 +227,91 @@ const createDetailRow = (
 };
 
 
+const createMenuVisual = (
+  item
+) => {
+  const visual =
+    document.createElement("div");
+
+  visual.className =
+    "menu-modal-visual";
+
+
+  const showFallback = () => {
+    visual.replaceChildren();
+
+    visual.classList.add(
+      "is-placeholder"
+    );
+
+    visual.textContent =
+      item.symbol ?? "N";
+  };
+
+
+  if (!item.image) {
+    showFallback();
+
+    return visual;
+  }
+
+
+  const image =
+    document.createElement("img");
+
+
+  image.src =
+    item.image;
+
+  image.alt =
+    `${item.name}のイメージ`;
+
+  image.loading =
+    "lazy";
+
+  image.decoding =
+    "async";
+
+
+  image.addEventListener(
+    "error",
+    showFallback,
+    {
+      once: true,
+    }
+  );
+
+
+  visual.append(image);
+
+
+  return visual;
+};
+
+
 const renderMenuModal = (
   container,
   item
 ) => {
   container.replaceChildren();
+
+
+  const layout =
+    document.createElement("div");
+
+  layout.className =
+    "menu-modal-layout";
+
+
+  const visual =
+    createMenuVisual(item);
+
+
+  const information =
+    document.createElement("div");
+
+  information.className =
+    "menu-modal-information";
 
 
   const category =
@@ -190,11 +327,14 @@ const renderMenuModal = (
   const title =
     document.createElement("h2");
 
-  title.id = "menu-modal-title";
+  title.id =
+    "menu-modal-title";
+
   title.className =
     "menu-modal-title";
 
-  title.textContent = item.name;
+  title.textContent =
+    item.name;
 
 
   const price =
@@ -204,7 +344,9 @@ const renderMenuModal = (
     "menu-modal-price";
 
   price.textContent =
-    formatPrice(item.price);
+    formatPrice(
+      item.price
+    );
 
 
   const description =
@@ -228,16 +370,12 @@ const renderMenuModal = (
     item.details ?? {}
   ).forEach(
     ([key, value]) => {
-      const labels = {
-        roast: "Roast",
-        origin: "Origin",
-        taste: "Taste",
-      };
-
 
       details.append(
         createDetailRow(
-          labels[key] ?? key,
+          DETAIL_LABELS[key] ??
+            key,
+
           value
         )
       );
@@ -245,175 +383,270 @@ const renderMenuModal = (
   );
 
 
-  container.append(
+  information.append(
     category,
     title,
     price,
     description,
     details
   );
-};
 
 
-const initContactModal = () => {
-  const modal =
-    document.querySelector(
-      SELECTORS.contactModal
-    );
-
-  const openButton =
-    document.querySelector(
-      SELECTORS.contactOpen
-    );
-
-
-  if (!modal || !openButton) {
-    return;
-  }
-
-
-  const closeButtons =
-    modal.querySelectorAll(
-      SELECTORS.contactClose
-    );
-
-  const form =
-    modal.querySelector(
-      SELECTORS.contactForm
-    );
-
-  const formMessage =
-    modal.querySelector(
-      SELECTORS.formMessage
-    );
-
-
-  openButton.addEventListener(
-    "click",
-    () => {
-      openModal(modal);
-    }
+  layout.append(
+    visual,
+    information
   );
 
 
-  closeButtons.forEach(
-    (button) => {
-      button.addEventListener(
-        "click",
-        () => {
-          closeModal(modal);
+  container.append(
+    layout
+  );
+};
+
+
+const initContactModal =
+  () => {
+
+    const modal =
+      document.querySelector(
+        SELECTORS.contactModal
+      );
+
+    const openButton =
+      document.querySelector(
+        SELECTORS.contactOpen
+      );
+
+
+    if (
+      !modal ||
+      !openButton
+    ) {
+      return;
+    }
+
+
+    const closeButtons =
+      modal.querySelectorAll(
+        SELECTORS.contactClose
+      );
+
+    const form =
+      modal.querySelector(
+        SELECTORS.contactForm
+      );
+
+    const formMessage =
+      modal.querySelector(
+        SELECTORS.formMessage
+      );
+
+
+    openButton.addEventListener(
+      "click",
+      () => {
+        openModal(modal);
+      }
+    );
+
+
+    closeButtons.forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          () => {
+            closeModal(modal);
+          }
+        );
+      }
+    );
+
+
+    form?.addEventListener(
+      "submit",
+      (event) => {
+
+        event.preventDefault();
+
+
+        if (
+          !form.checkValidity()
+        ) {
+          form.reportValidity();
+
+          return;
         }
-      );
-    }
-  );
 
 
-  form?.addEventListener(
-    "submit",
-    (event) => {
-      event.preventDefault();
-
-
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
-
-
-      if (formMessage) {
-        formMessage.textContent =
-          "入力確認OK：このフォームはポートフォリオ用デモのため送信されません。";
-      }
-    }
-  );
-};
-
-
-const initMenuModal = () => {
-  const modal =
-    document.querySelector(
-      SELECTORS.menuModal
-    );
-
-  if (!modal) {
-    return;
-  }
-
-
-  const content =
-    modal.querySelector(
-      SELECTORS.menuContent
-    );
-
-  const closeButtons =
-    modal.querySelectorAll(
-      SELECTORS.menuClose
-    );
-
-
-  if (!content) {
-    return;
-  }
-
-
-  document.addEventListener(
-    "menu:selected",
-    (event) => {
-      const itemId =
-        event.detail?.itemId;
-
-
-      if (!itemId) {
-        return;
-      }
-
-
-      const item =
-        getMenuItemById(itemId);
-
-
-      if (!item) {
-        return;
-      }
-
-
-      renderMenuModal(
-        content,
-        item
-      );
-
-      openModal(modal);
-    }
-  );
-
-
-  closeButtons.forEach(
-    (button) => {
-      button.addEventListener(
-        "click",
-        () => {
-          closeModal(modal);
+        if (formMessage) {
+          formMessage.textContent =
+            "入力内容を確認しました　本フォームはデモのため送信されません";
         }
-      );
-    }
-  );
-};
-
-
-export const initModals = () => {
-  initContactModal();
-  initMenuModal();
-
-
-  document.addEventListener(
-    "keydown",
-    (event) => {
-      if (
-        event.key === "Escape" &&
-        activeModal
-      ) {
-        closeModal(activeModal);
       }
+    );
+  };
+
+
+const initMenuModal =
+  () => {
+
+    const modal =
+      document.querySelector(
+        SELECTORS.menuModal
+      );
+
+
+    if (!modal) {
+      return;
     }
-  );
-};
+
+
+    const content =
+      modal.querySelector(
+        SELECTORS.menuContent
+      );
+
+    const closeButtons =
+      modal.querySelectorAll(
+        SELECTORS.menuClose
+      );
+
+
+    if (!content) {
+      return;
+    }
+
+
+    document.addEventListener(
+      MENU_EVENTS.SELECTED,
+      (event) => {
+
+        const itemId =
+          event.detail?.itemId;
+
+
+        if (!itemId) {
+          return;
+        }
+
+
+        const item =
+          getMenuItemById(
+            itemId
+          );
+
+
+        if (!item) {
+          return;
+        }
+
+
+        renderMenuModal(
+          content,
+          item
+        );
+
+
+        openModal(modal);
+      }
+    );
+
+
+    closeButtons.forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          () => {
+            closeModal(modal);
+          }
+        );
+      }
+    );
+  };
+
+
+const initKeyboardHandling =
+  () => {
+
+    document.addEventListener(
+      "keydown",
+      (event) => {
+
+        if (
+          event.key === "Escape" &&
+          activeModal
+        ) {
+          closeModal(
+            activeModal
+          );
+
+          return;
+        }
+
+
+        if (
+          event.key !== "Tab" ||
+          !activeModal
+        ) {
+          return;
+        }
+
+
+        const focusable =
+          getFocusableElements(
+            activeModal
+          );
+
+
+        if (
+          focusable.length === 0
+        ) {
+          return;
+        }
+
+
+        const first =
+          focusable[0];
+
+        const last =
+          focusable[
+            focusable.length - 1
+          ];
+
+
+        if (
+          event.shiftKey &&
+          document.activeElement ===
+            first
+        ) {
+          event.preventDefault();
+
+          last.focus();
+
+          return;
+        }
+
+
+        if (
+          !event.shiftKey &&
+          document.activeElement ===
+            last
+        ) {
+          event.preventDefault();
+
+          first.focus();
+        }
+      }
+    );
+  };
+
+
+export const initModals =
+  () => {
+
+    initContactModal();
+    initMenuModal();
+    initKeyboardHandling();
+  };
