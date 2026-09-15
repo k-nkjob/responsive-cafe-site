@@ -3,12 +3,10 @@
  * Modal Module
  *
  * Responsibilities:
- * - Shared modal behavior
  * - Contact modal
  * - Menu detail modal
- * - Menu image rendering
- * - Image fallback
- * - Escape key handling
+ * - Product visual
+ * - Keyboard control
  * - Focus restoration
  */
 
@@ -64,21 +62,15 @@ const priceFormatter =
   );
 
 
-let activeModal =
-  null;
+let activeModal = null;
 
 let previouslyFocusedElement =
   null;
 
 
-const formatPrice = (
-  price
-) => {
-  return priceFormatter.format(
-    price
-  );
-};
-
+/* =========================================================
+   Shared Modal
+========================================================= */
 
 const getFocusableElements = (
   modal
@@ -98,22 +90,9 @@ const getFocusableElements = (
 };
 
 
-const openModal = (
-  modal
-) => {
+const openModal = (modal) => {
   if (!modal) {
     return;
-  }
-
-
-  if (
-    activeModal &&
-    activeModal !== modal
-  ) {
-    closeModal(
-      activeModal,
-      false
-    );
   }
 
 
@@ -125,36 +104,32 @@ const openModal = (
     "is-open"
   );
 
+
   modal.setAttribute(
     "aria-hidden",
     "false"
   );
+
 
   document.body.classList.add(
     "is-locked"
   );
 
 
-  activeModal =
-    modal;
+  activeModal = modal;
 
 
-  const [
-    firstFocusable,
-  ] =
+  const firstFocusable =
     getFocusableElements(
       modal
-    );
+    )[0];
 
 
   firstFocusable?.focus();
 };
 
 
-const closeModal = (
-  modal,
-  restoreFocus = true
-) => {
+const closeModal = (modal) => {
   if (!modal) {
     return;
   }
@@ -164,26 +139,22 @@ const closeModal = (
     "is-open"
   );
 
+
   modal.setAttribute(
     "aria-hidden",
     "true"
   );
 
 
-  if (
-    activeModal === modal
-  ) {
-    activeModal =
-      null;
+  document.body.classList.remove(
+    "is-locked"
+  );
 
-    document.body.classList.remove(
-      "is-locked"
-    );
-  }
+
+  activeModal = null;
 
 
   if (
-    restoreFocus &&
     previouslyFocusedElement
       instanceof HTMLElement
   ) {
@@ -192,22 +163,60 @@ const closeModal = (
 };
 
 
+/* =========================================================
+   Menu Visual
+========================================================= */
+
+const createMenuVisual = (
+  item
+) => {
+  const visual =
+    document.createElement("div");
+
+
+  visual.className =
+    "menu-modal-visual is-placeholder";
+
+
+  const symbol =
+    document.createElement("span");
+
+
+  symbol.className =
+    "menu-modal-symbol";
+
+
+  symbol.textContent =
+    item.symbol ?? "N";
+
+
+  visual.append(symbol);
+
+
+  return visual;
+};
+
+
+/* =========================================================
+   Menu Detail
+========================================================= */
+
 const createDetailRow = (
   label,
   value
 ) => {
-  const wrapper =
+  const row =
     document.createElement("div");
 
-  wrapper.className =
+
+  row.className =
     "menu-modal-detail";
 
 
   const term =
     document.createElement("dt");
 
-  term.textContent =
-    label;
+  term.textContent = label;
 
 
   const description =
@@ -217,75 +226,13 @@ const createDetailRow = (
     value;
 
 
-  wrapper.append(
+  row.append(
     term,
     description
   );
 
 
-  return wrapper;
-};
-
-
-const createMenuVisual = (
-  item
-) => {
-  const visual =
-    document.createElement("div");
-
-  visual.className =
-    "menu-modal-visual";
-
-
-  const showFallback = () => {
-    visual.replaceChildren();
-
-    visual.classList.add(
-      "is-placeholder"
-    );
-
-    visual.textContent =
-      item.symbol ?? "N";
-  };
-
-
-  if (!item.image) {
-    showFallback();
-
-    return visual;
-  }
-
-
-  const image =
-    document.createElement("img");
-
-
-  image.src =
-    item.image;
-
-  image.alt =
-    `${item.name}のイメージ`;
-
-  image.loading =
-    "lazy";
-
-  image.decoding =
-    "async";
-
-
-  image.addEventListener(
-    "error",
-    showFallback,
-    {
-      once: true,
-    }
-  );
-
-
-  visual.append(image);
-
-
-  return visual;
+  return row;
 };
 
 
@@ -299,16 +246,17 @@ const renderMenuModal = (
   const layout =
     document.createElement("div");
 
+
   layout.className =
     "menu-modal-layout";
 
 
-  const visual =
-    createMenuVisual(item);
-
-
+  /*
+   * INFORMATION
+   */
   const information =
     document.createElement("div");
+
 
   information.className =
     "menu-modal-information";
@@ -317,8 +265,10 @@ const renderMenuModal = (
   const category =
     document.createElement("p");
 
+
   category.className =
     "menu-modal-category";
+
 
   category.textContent =
     item.category.toUpperCase();
@@ -327,11 +277,14 @@ const renderMenuModal = (
   const title =
     document.createElement("h2");
 
+
   title.id =
     "menu-modal-title";
 
+
   title.className =
     "menu-modal-title";
+
 
   title.textContent =
     item.name;
@@ -340,11 +293,13 @@ const renderMenuModal = (
   const price =
     document.createElement("p");
 
+
   price.className =
     "menu-modal-price";
 
+
   price.textContent =
-    formatPrice(
+    priceFormatter.format(
       item.price
     );
 
@@ -352,8 +307,10 @@ const renderMenuModal = (
   const description =
     document.createElement("p");
 
+
   description.className =
     "menu-modal-description";
+
 
   description.textContent =
     item.description;
@@ -361,6 +318,7 @@ const renderMenuModal = (
 
   const details =
     document.createElement("dl");
+
 
   details.className =
     "menu-modal-details";
@@ -392,9 +350,20 @@ const renderMenuModal = (
   );
 
 
+  /*
+   * VISUAL
+   *
+   * Information first
+   * Visual second
+   * = symbol appears on right side
+   */
+  const visual =
+    createMenuVisual(item);
+
+
   layout.append(
-    visual,
-    information
+    information,
+    visual
   );
 
 
@@ -404,249 +373,243 @@ const renderMenuModal = (
 };
 
 
-const initContactModal =
-  () => {
+/* =========================================================
+   Contact
+========================================================= */
 
-    const modal =
-      document.querySelector(
-        SELECTORS.contactModal
-      );
-
-    const openButton =
-      document.querySelector(
-        SELECTORS.contactOpen
-      );
+const initContactModal = () => {
+  const modal =
+    document.querySelector(
+      SELECTORS.contactModal
+    );
 
 
-    if (
-      !modal ||
-      !openButton
-    ) {
-      return;
+  const openButton =
+    document.querySelector(
+      SELECTORS.contactOpen
+    );
+
+
+  if (
+    !modal ||
+    !openButton
+  ) {
+    return;
+  }
+
+
+  openButton.addEventListener(
+    "click",
+    () => {
+      openModal(modal);
     }
+  );
 
 
-    const closeButtons =
-      modal.querySelectorAll(
-        SELECTORS.contactClose
+  modal
+    .querySelectorAll(
+      SELECTORS.contactClose
+    )
+    .forEach((button) => {
+
+      button.addEventListener(
+        "click",
+        () => {
+          closeModal(modal);
+        }
       );
-
-    const form =
-      modal.querySelector(
-        SELECTORS.contactForm
-      );
-
-    const formMessage =
-      modal.querySelector(
-        SELECTORS.formMessage
-      );
+    });
 
 
-    openButton.addEventListener(
-      "click",
-      () => {
-        openModal(modal);
-      }
+  const form =
+    modal.querySelector(
+      SELECTORS.contactForm
     );
 
 
-    closeButtons.forEach(
-      (button) => {
+  const message =
+    modal.querySelector(
+      SELECTORS.formMessage
+    );
 
-        button.addEventListener(
-          "click",
-          () => {
-            closeModal(modal);
-          }
+
+  form?.addEventListener(
+    "submit",
+    (event) => {
+
+      event.preventDefault();
+
+
+      if (
+        !form.checkValidity()
+      ) {
+        form.reportValidity();
+
+        return;
+      }
+
+
+      if (message) {
+        message.textContent =
+          "入力内容を確認しました　本フォームはデモのため送信されません";
+      }
+    }
+  );
+};
+
+
+/* =========================================================
+   Menu
+========================================================= */
+
+const initMenuModal = () => {
+  const modal =
+    document.querySelector(
+      SELECTORS.menuModal
+    );
+
+
+  if (!modal) {
+    return;
+  }
+
+
+  const content =
+    modal.querySelector(
+      SELECTORS.menuContent
+    );
+
+
+  if (!content) {
+    return;
+  }
+
+
+  document.addEventListener(
+    MENU_EVENTS.SELECTED,
+    (event) => {
+
+      const item =
+        getMenuItemById(
+          event.detail?.itemId
         );
+
+
+      if (!item) {
+        return;
       }
-    );
 
 
-    form?.addEventListener(
-      "submit",
-      (event) => {
+      renderMenuModal(
+        content,
+        item
+      );
 
+
+      openModal(modal);
+    }
+  );
+
+
+  modal
+    .querySelectorAll(
+      SELECTORS.menuClose
+    )
+    .forEach((button) => {
+
+      button.addEventListener(
+        "click",
+        () => {
+          closeModal(modal);
+        }
+      );
+    });
+};
+
+
+/* =========================================================
+   Keyboard
+========================================================= */
+
+const initKeyboard = () => {
+  document.addEventListener(
+    "keydown",
+    (event) => {
+
+      if (
+        event.key === "Escape" &&
+        activeModal
+      ) {
+        closeModal(
+          activeModal
+        );
+
+        return;
+      }
+
+
+      if (
+        event.key !== "Tab" ||
+        !activeModal
+      ) {
+        return;
+      }
+
+
+      const focusable =
+        getFocusableElements(
+          activeModal
+        );
+
+
+      if (
+        focusable.length === 0
+      ) {
+        return;
+      }
+
+
+      const first =
+        focusable[0];
+
+
+      const last =
+        focusable[
+          focusable.length - 1
+        ];
+
+
+      if (
+        event.shiftKey &&
+        document.activeElement ===
+          first
+      ) {
         event.preventDefault();
 
-
-        if (
-          !form.checkValidity()
-        ) {
-          form.reportValidity();
-
-          return;
-        }
-
-
-        if (formMessage) {
-          formMessage.textContent =
-            "入力内容を確認しました　本フォームはデモのため送信されません";
-        }
+        last.focus();
       }
-    );
-  };
 
 
-const initMenuModal =
-  () => {
+      if (
+        !event.shiftKey &&
+        document.activeElement ===
+          last
+      ) {
+        event.preventDefault();
 
-    const modal =
-      document.querySelector(
-        SELECTORS.menuModal
-      );
-
-
-    if (!modal) {
-      return;
+        first.focus();
+      }
     }
+  );
+};
 
 
-    const content =
-      modal.querySelector(
-        SELECTORS.menuContent
-      );
+/* =========================================================
+   Init
+========================================================= */
 
-    const closeButtons =
-      modal.querySelectorAll(
-        SELECTORS.menuClose
-      );
-
-
-    if (!content) {
-      return;
-    }
-
-
-    document.addEventListener(
-      MENU_EVENTS.SELECTED,
-      (event) => {
-
-        const itemId =
-          event.detail?.itemId;
-
-
-        if (!itemId) {
-          return;
-        }
-
-
-        const item =
-          getMenuItemById(
-            itemId
-          );
-
-
-        if (!item) {
-          return;
-        }
-
-
-        renderMenuModal(
-          content,
-          item
-        );
-
-
-        openModal(modal);
-      }
-    );
-
-
-    closeButtons.forEach(
-      (button) => {
-
-        button.addEventListener(
-          "click",
-          () => {
-            closeModal(modal);
-          }
-        );
-      }
-    );
-  };
-
-
-const initKeyboardHandling =
-  () => {
-
-    document.addEventListener(
-      "keydown",
-      (event) => {
-
-        if (
-          event.key === "Escape" &&
-          activeModal
-        ) {
-          closeModal(
-            activeModal
-          );
-
-          return;
-        }
-
-
-        if (
-          event.key !== "Tab" ||
-          !activeModal
-        ) {
-          return;
-        }
-
-
-        const focusable =
-          getFocusableElements(
-            activeModal
-          );
-
-
-        if (
-          focusable.length === 0
-        ) {
-          return;
-        }
-
-
-        const first =
-          focusable[0];
-
-        const last =
-          focusable[
-            focusable.length - 1
-          ];
-
-
-        if (
-          event.shiftKey &&
-          document.activeElement ===
-            first
-        ) {
-          event.preventDefault();
-
-          last.focus();
-
-          return;
-        }
-
-
-        if (
-          !event.shiftKey &&
-          document.activeElement ===
-            last
-        ) {
-          event.preventDefault();
-
-          first.focus();
-        }
-      }
-    );
-  };
-
-
-export const initModals =
-  () => {
-
-    initContactModal();
-    initMenuModal();
-    initKeyboardHandling();
-  };
+export const initModals = () => {
+  initContactModal();
+  initMenuModal();
+  initKeyboard();
+};
