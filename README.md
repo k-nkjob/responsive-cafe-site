@@ -1,10 +1,3 @@
-もちろんです。GitHubでそのまま使えるように、**日本語 → English** の順で1つの `README.md` にまとめる形がよいです。
-
-作品名だけでなく、今回意識した**保守性・責務分離・既存サイト改修を想定した設計**まで書いておきます。自主制作であることも明記するので、実務実績との誤認もありません。
-
-`responsive-cafe-site` の現在の `README.md` を**全部削除して、以下を丸ごと1回コピペ**してください。
-
-````markdown
 # NORTH COFFEE - Responsive Cafe Website
 
 架空のコーヒーショップ「NORTH COFFEE」を題材に制作した、レスポンシブWebサイトです。
@@ -452,4 +445,3 @@ GitHub上で保存するときのCommit messageは、
 でOKです。
 
 READMEを保存したら、次は**メインポートフォリオ `k-nkjob.github.io` の Work 01 を `Completed` にして、Live DemoとGitHub Repositoryの2ボタンを付ける**ところまでやれば、Work #1は完全終了です。 
-```
