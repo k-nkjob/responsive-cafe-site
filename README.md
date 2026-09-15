@@ -423,25 +423,3 @@ NORTH COFFEE is a fictional coffee shop and is not associated with any real comp
 The contact form is a UI demonstration and does not submit data.
 
 ---
-
-## Author
-
-GitHub: `k-nkjob`
-
-```
-
-### これでREADMEとして十分強いです
-
-特に重要なのは、単に「カフェサイトを作りました」ではなく、
-
-**「既存コードを修正しやすいように責務分離している」**
-
-という説明を入れていることです。これは今回CrowdWorksで取りたい「既存サイト修正・バグ修正・機能追加」とかなり相性がいいです。
-
-GitHub上で保存するときのCommit messageは、
-
-`Complete bilingual project documentation`
-
-でOKです。
-
-READMEを保存したら、次は**メインポートフォリオ `k-nkjob.github.io` の Work 01 を `Completed` にして、Live DemoとGitHub Repositoryの2ボタンを付ける**ところまでやれば、Work #1は完全終了です。 
