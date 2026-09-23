@@ -379,3 +379,71 @@ h1,h2,h3,.lead-text,.section-description{
   .hero-actions{align-items:stretch!important}
   .hero-actions .button,.hero-actions .text-link{width:auto!important}
 }
+
+
+/* === CONTRAST GUARDRAILS V1 ===
+   Readability contract:
+   - primary text: #241e19 on light surfaces
+   - secondary text: #5f574f on light surfaces
+   - interactive dark surface: #25352b with white text
+   - accent link: #8b4427
+   This prevents pale text from inheriting from the original dark contact component. */
+:root{
+  --read-text:#241e19;
+  --read-muted:#5f574f;
+  --read-link:#8b4427;
+  --read-action:#25352b;
+}
+body{color:var(--read-text)!important}
+a{color:inherit}
+.contact-section{
+  background:
+    linear-gradient(90deg,rgba(239,231,219,.72),rgba(239,231,219,.52)),
+    url("https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1600&q=84")
+    center/cover no-repeat!important;
+}
+.contact-panel{
+  color:var(--read-text)!important;
+  background:rgba(255,250,242,.96)!important;
+  border-color:rgba(61,48,36,.16)!important;
+}
+.contact-panel .section-label{
+  color:var(--read-link)!important;
+  font-weight:800!important;
+}
+.contact-copy h2{
+  color:var(--read-text)!important;
+}
+.contact-copy>p:last-child{
+  color:var(--read-muted)!important;
+}
+.contact-panel .button-light{
+  background:var(--read-action)!important;
+  color:#fff!important;
+  border-color:var(--read-action)!important;
+  box-shadow:0 8px 20px rgba(37,53,43,.16)!important;
+}
+.contact-panel .button-light:hover{
+  background:#1d2b23!important;
+  color:#fff!important;
+}
+.modal-dialog{
+  color:var(--read-text)!important;
+  background:#fffdf8!important;
+}
+.modal-dialog .section-label{color:var(--read-link)!important}
+.modal-dialog>h2{color:var(--read-text)!important}
+.modal-description{color:var(--read-muted)!important}
+.modal-close{color:var(--read-text)!important}
+.modal-dialog input,
+.modal-dialog textarea{
+  color:var(--read-text)!important;
+  background:#fff!important;
+  border-color:#d8d1c8!important;
+}
+.modal-dialog input::placeholder,
+.modal-dialog textarea::placeholder{color:#80766d!important}
+:focus-visible{
+  outline:3px solid rgba(139,68,39,.28)!important;
+  outline-offset:3px!important;
+}
